@@ -56,7 +56,7 @@ def calculate_impedance_Pocklington (R, element_num, wire_radius, delta_z, omega
     
     #* Compute block matrix of impedance
     impedance_block = []
-    for m in range(0, len(R)):
+    for m in tqdm(range(0, len(R))):
         impedance_row = []
         #* Filling the block using its teplitz structure
         for n in range (0, len(R)):
