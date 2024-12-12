@@ -77,37 +77,19 @@ def calculate_impedance_Pocklington (R, element_num, wire_radius, delta_z, omega
             impedance[cum_n[i]:cum_n[i+1], cum_n[j]:cum_n[j+1]] = impedance_block[i][j]
     return impedance
 
-def calculate_voltage_Pocklington (R, element_num, source_position, driven_field, delta_z) :
-    voltage_block = []
+def calculate_voltage_Pocklington (R, element_num, source_position, driven_voltage, delta_z) :
+    field_block = []
     for m in range (len(R)):
-        voltage_row = np.zeros(len(R[m]))
+        field_row = np.zeros(len(R[m]))
         for i in range (len(R[m])):
             for k in range(len(source_position)):
                 if all(source_position[k] == R[m][i,:]) :
-                    voltage_row[i] = (driven_field / delta_z)
-        voltage_block.append(voltage_row)
+                    field_row[i] = (driven_voltage / delta_z)
+        field_block.append(field_row)
     #* Deploying a block matrix (reshape)
     num_elements = sum(element_num)
-    voltage = np.zeros((num_elements), dtype = float)
+    field = np.zeros((num_elements), dtype = float)
     cum_n = np.append(0, np.cumsum(element_num))
     for i in range (len(cum_n)-1):
-        voltage[cum_n[i]:cum_n[i+1]] = voltage_block[i]
-    return voltage_block, voltage
-
-
-
-# Calculate and return impedance matrix
-#def Z_matrix(R, wire_radius, dz, omega):
-#    # Create Data-dict to avoid recalculations
-#    Data = {}
-#    Z = np.zeros((len(R), len(R)), dtype = complex)
-#    for n, r_n in tqdm(enumerate(R)):
-#        for m, r_m in enumerate(R):
-#            delta_r = r_m - r_n
-#            id_positive, id_negative = (delta_r[0], delta_r[1], delta_r[2]), (-delta_r[0], -delta_r[1], -delta_r[2])
-#            if id_positive in Data or id_negative in Data:
-#                Z[n][m] = Data[id_positive]
-#            else:
-#                Z[n][m] = Zmn_single(r_n, r_m, omega, dz, wire_radius)
-#                Data[id_positive],Data[id_negative] = Z[n][m], Z[n][m]         
-#    return Z
+        field[cum_n[i]:cum_n[i+1]] = field_block[i]
+    return field
