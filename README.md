@@ -8,12 +8,12 @@ From here we get a system of linear equations $m$ by $n$, where $m$ is the numbe
 In case of calculating directional pattern of antenna we can solve Pocklington's equation:
 $$j\omega\mu \left( 1 + \dfrac{1}{k^2} \dfrac{\partial^2}{{\partial z}^2}\right) \int_{V} I(z) \dfrac{exp(-jkR)}{4\pi R} \,dz \ = E_z^i$$
 Method of moments converts functional equation into a matrix equation:
-$$ ZI = V$$
-where $Z$ - impedance matrix, $I$ - current matrix, V - operating voltage
+$$ ZI = V $$
+where $ Z $ - impedance matrix, $ I $ - current matrix, V - operating voltage
 
 or Hallen's equation:
-$$j\omega\mu \int_{V} I(z) \left( 1 + \dfrac{1}{k^2} \dfrac{\partial^2}{{\partial z}^2}\right)\dfrac{exp(-jkR)}{4\pi R} \,dz \ = E_z^i$$
+$$ j\omega\mu \int_{V} I(z) \left( 1 + \dfrac{1}{k^2} \dfrac{\partial^2}{{\partial z}^2}\right)\dfrac{exp(-jkR)}{4\pi R} \,dz \ = E_z^i $$
 Method of moments converts functional equation into a matrix equation:
-$$ ZI = C_1s_1+C_2s_2 + b$$
-where $Z$ - block impedance matrix, $I$ - block current, s_1 and s_2 - homogeneous solution, b - nonhomogeneous part
+$$ ZI = C_1s_1+C_2s_2 + b $$
+where $ Z $ - block impedance matrix, $ I $ - block current, $ s_1 $ and $ s_2 $ - homogeneous solution, $ b $ - nonhomogeneous part
 
