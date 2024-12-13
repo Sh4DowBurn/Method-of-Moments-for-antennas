@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import colormaps as cmaps
 from matplotlib import colormaps as plt_cmaps
+import plotly.graph_objects as go
 
 #* define constants
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12 
@@ -86,6 +87,68 @@ def plot_separately (R_block, current_block):
         axs[i].set_ylabel('Induced current (mA)', size = 6)
         axs[i].set_xlabel('Z position (m)', size = 6)
         axs[i].grid(zorder = 0)
-        axs[i].legend()
     for j in range(len(R_block), len(axs)):
         fig.delaxes(axs[j])
+        
+def current_distribution_3d (R, source_position, R_block, current_block):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter3d(
+        x=R[:,0],
+        y=R[:,1],
+        z=R[:,2],
+        mode='markers',
+        marker=dict(size=2, color='blue')
+    ))
+    fig.add_trace(go.Scatter3d(
+        x = source_position[:,0],
+        y = source_position[:,1],
+        z = source_position[:,2],
+        mode='markers',
+        marker=dict(size=3,color='red')
+    ))
+    for i in range (len(R_block)):
+        x1 = np.abs(current_block[i])
+        y1 = np.full(len(R_block[i]), R_block[i][0,1])
+        z1 = R_block[i][:,2]
+        fig.add_trace(go.Scatter3d(
+            x=x1,
+            y=y1,
+            z=z1,
+            mode='markers',
+            marker=dict(size=1,color=x1,
+            colorscale='Viridis')
+        ))
+    fig.update_layout(
+        title='Current distribution in Yagi-Uda antenna',
+        showlegend = False,
+        scene=dict(
+            xaxis_title='Induced current, A',
+            yaxis_title='Y position, m',
+            zaxis_title='Z position, m'
+        )
+    )
+    fig.show()
+    
+def current_distribution_2d (R, current):
+    
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=R[:,1],
+        y=R[:,2] ,
+        mode='markers',
+        marker=dict(
+            size=10,
+            color=np.abs(current),
+            colorscale='plasma',
+            showscale=True,
+            colorbar=dict(title='Amplitude of current, A')
+        ),
+        name='Точки'
+    ))
+    fig.update_layout(
+        title='Induced current distribution',
+        xaxis_title='Y position, m',
+        yaxis_title='Z position, m'
+    )
+    fig.show()
