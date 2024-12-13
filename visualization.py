@@ -86,6 +86,5 @@ def plot_separately (R_block, current_block):
         axs[i].set_ylabel('Induced current (mA)', size = 6)
         axs[i].set_xlabel('Z position (m)', size = 6)
         axs[i].grid(zorder = 0)
-        axs[i].legend()
     for j in range(len(R_block), len(axs)):
         fig.delaxes(axs[j])
