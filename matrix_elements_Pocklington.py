@@ -25,7 +25,7 @@ def derGreen_function(r_n, r_m, omega):
 def derderGreen_function(r_n, r_m, omega):
     rnm = np.linalg.norm(r_m-r_n, ord = 2)
     dz, k = r_m[2] - r_n[2], omega/c
-    # Formula from Shuras ass
+    # Formula from Shuras MIND
     poly_part = 2 * dz ** 2 + 3j * k * dz ** 2 * rnm - (1-k**2 * dz ** 2) * rnm ** 2 -\
         1j * k * rnm ** 3 + k ** 2 * rnm ** 4
     # Formula from Indian masters
@@ -56,7 +56,7 @@ def calculate_impedance_Pocklington (R, element_num, wire_radius, delta_z, omega
     
     #* Compute block matrix of impedance
     impedance_block = []
-    for m in tqdm(range(0, len(R))):
+    for m in range(0, len(R)):
         impedance_row = []
         #* Filling the block using its teplitz structure
         for n in range (0, len(R)):
