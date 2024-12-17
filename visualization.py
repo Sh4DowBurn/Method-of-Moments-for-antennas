@@ -52,9 +52,9 @@ def calculate_positions (element_length, element_position, frequency, delta_z) :
     for m in range (0, len(element_num)):
         R_block[m] = np.zeros((element_num[m], 3))
         for i in range (0, len(R_block[m])):
-            R_block[m][i, 0] = 0
-            R_block[m][i, 1] = element_position[m]
-            R_block[m][i, 2] = -element_num[m]*delta_z / 2 + delta_z * (1/2 + i)
+            R_block[m][i, 0] = element_position[m][0]
+            R_block[m][i, 1] = element_position[m][1]
+            R_block[m][i, 2] = element_position[m][2] - element_num[m]*delta_z / 2 + delta_z * (1/2 + i) 
     
     #* Deploying a block matrix (reshape)
     num_elements = sum(element_num)

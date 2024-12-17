@@ -62,7 +62,7 @@ def calculate_impedance_Pocklington (R, element_num, wire_radius, delta_z, omega
         for n in range (0, len(R)):
             impedance_mn = np.zeros((len(R[m]), len(R[n])), dtype = complex)
             for i in range (len(R[m]) + len(R[n])):
-                impedance_mn[max(0, len(R[m])-i-1), max(0, i-len(R[m]))] = Zmn_single(R[n][max(0, i-len(R[m]))], R[m][max(0, len(R[m])-i-1)], omega, delta_z, wire_radius)
+                impedance_mn[max(0, len(R[m])-i-1), max(0, i-len(R[m]))] = Zmn_single(R[n][max(0, i-len(R[m]))], R[m][max(0, len(R[m])-i-1)], omega, delta_z, wire_radius[m])
                 for k in range (min( min(len(R[m]), len(R[n])), i+1, len(R[m]) + len(R[n]) - i)):
                     impedance_mn[max(0, len(R[m])-i-1) + k, max(0, i-len(R[m])) + k] = impedance_mn[max(0, len(R[m])-i-1), max(0, i-len(R[m]))]
             impedance_row.append(impedance_mn)
