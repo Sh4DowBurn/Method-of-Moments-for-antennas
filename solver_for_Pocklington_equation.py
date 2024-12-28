@@ -8,7 +8,7 @@ from matrix_elements_Pocklington import calculate_impedance_Pocklington
 from matrix_elements_Pocklington import calculate_voltage_Pocklington
 
 #* Define constants
-light_speed, mu0, eps0= 299792458., 4*np.pi*1e-7, 8.854e-12
+light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 
 def directional_pattern (frequency, delta_z, incident_voltage, element_position, element_length, wire_radius, source_position):
     omega = 2 * np.pi * frequency
