@@ -1,7 +1,7 @@
 # Import extension Better Comments for beauty
 import better
 
-#! This is a function for visualizating geometry of antenna
+#! This is a functions for visualizating geometry of antenna and current distribution
 
 #* Import library for graphics
 import matplotlib.pyplot as plt
@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 #* define constants
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12 
 
+#! Plot 2D geometry of antenna (for Yagi-Uda antennas)
 def plot_2dmodel (R, source_position, num_elements, delta_z):
 
     #* Create figure and axes
@@ -21,7 +22,7 @@ def plot_2dmodel (R, source_position, num_elements, delta_z):
     for i in range (len(R)):
         for k in range (len(source_position)):
             if all(source_position[k] == R[i]):
-                plt.errorbar(np.array(R[i,1]),np.array(R[i,2]), xerr = delta_z, linestyle = "none", marker = '.', markersize = '5', zorder = np.inf, color = 'red')
+                plt.errorbar(np.array(R[i,1]),np.array(R[i,2]), xerr = delta_z, linestyle = "none", marker = '.', markersize = '5', zorder = np.inf, color = 'red') #* source position
     #* Set limits for axes 
     ax.set_xlim(min(R[:,1])-0.1, max(R[:,1])+0.1)
     ax.set_ylim(min(R[:,2])-0.1, max(R[:,2]+0.1))
@@ -37,6 +38,7 @@ def plot_2dmodel (R, source_position, num_elements, delta_z):
     #* show figure
     plt.show()
 
+#! Calculating position of mom's sigments 
 def calculate_positions (element_length, element_position, frequency, delta_z) :
     
     #* Calculate some parametres of system
@@ -64,6 +66,7 @@ def calculate_positions (element_length, element_position, frequency, delta_z) :
         R[cum_n[i]:cum_n[i+1]] = R_block[i]
     return element_num, R_block, R
 
+#! Plot currents distribution on 1 figure
 def plot_together (R_block, element_currents) :
     cmap = plt_cmaps['hot']
     for i in range (len(R_block)):
@@ -75,6 +78,7 @@ def plot_together (R_block, element_currents) :
     plt.grid(zorder = 0)
     plt.legend()
     
+#! Plot currents separately
 def plot_separately (R_block, current_block): 
     cmap = plt_cmaps['hot']
     cols = 3
@@ -89,7 +93,8 @@ def plot_separately (R_block, current_block):
         axs[i].grid(zorder = 0)
     for j in range(len(R_block), len(axs)):
         fig.delaxes(axs[j])
-        
+
+#! 3d current distribution (also 3d model of antenna)
 def current_distribution_3d (R, source_position, R_block, current_block):
     fig = go.Figure()
     fig.add_trace(go.Scatter3d(

@@ -1,6 +1,7 @@
 
 import better 
 
+#! This is a solver that calculates radiation pattern 
 import numpy as np
 import matplotlib.pyplot as plt
 from visualization import calculate_positions
