@@ -85,6 +85,7 @@ def calculate_voltage_Pocklington (R, element_num, source_position, driven_volta
             for k in range(len(source_position)):
                 if all(source_position[k] == R[m][i,:]) :
                     field_row[i] = (driven_voltage / delta_z)
+                #!    field_row[i] = driven_voltage
         field_block.append(field_row)
     #* Deploying a block matrix (reshape)
     num_elements = sum(element_num)
