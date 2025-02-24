@@ -4,9 +4,9 @@ import better
 #! This is a solver that calculates radiation pattern 
 import numpy as np
 import matplotlib.pyplot as plt
-from visualization import calculate_positions
-from matrix_elements_Pocklington import calculate_impedance_Pocklington
-from matrix_elements_Pocklington import calculate_voltage_Pocklington
+from yagi_visualization import calculate_positions
+from yagi_matrix_elements import calculate_impedance_Pocklington
+from yagi_matrix_elements import calculate_voltage_Pocklington
 
 #* Define constants
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
