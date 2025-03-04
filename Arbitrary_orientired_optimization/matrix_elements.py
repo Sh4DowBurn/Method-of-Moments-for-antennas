@@ -33,25 +33,7 @@ def ImderXGreen_function(t_n, r_m, r_n, dr_m, dr_n, phi_m, phi_n, omega):
 
 def RederYGreen_function(t_n, r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega):
     
-    ymp, ymm = r_m[1] + dr_m[1]/2, r_m[1] - dr_m[1]/2
-    xmp, xmm = (ymp - y0) / np.tan(phi_m) + x0, (ymm - y0) / np.tan(phi_m) + x0
-    pp, pm = np.array([xmp, ymp]), np.array([xmm, ymm])
-    
-    rmnp = np.linalg.norm(pp - r_n - dr_n * (t_n - 1/2))
-    rmnm = np.linalg.norm(pm - r_n - dr_n * (t_n - 1/2))
-    
-    polypartp = -((xmp - dr_n[0] - dr_n[0] * (t_n - 1/2))/np.tan(phi_m) + (ymp - dr_n[1] - dr_n[1] * (t_n - 1/2)))
-    polypartm =  ((xmm - dr_n[0] - dr_n[0] * (t_n - 1/2))/np.tan(phi_m) + (ymm - dr_n[1] - dr_n[1] * (t_n - 1/2)))
-    #rmnp = np.linalg.norm(r_m + dr_m/2 - r_n - dr_n * (t_n - 1/2))
-    #rmnm = np.linalg.norm(r_m - dr_m/2 - r_n - dr_n * (t_n - 1/2))
-    #polypartp = -(r_m[1] + dr_m[1]/2 - r_n[1] - dr_n[1] * (t_n - 1/2))
-    #polypartm = (r_m[1] - dr_m[1]/2 - r_n[1] - dr_n[1] * (t_n - 1/2))
-    dr = np.linalg.norm(dr_n)
-    return (dr*(polypartp * (1 + 1j * omega/c * rmnp) / rmnp**3 * np.exp(-1j * omega/c * rmnp) + polypartm * (1 + 1j * omega/c * rmnm) / rmnm**3 * np.exp(-1j * omega/c * rmnm))).real
-
-def ImderYGreen_function(t_n, r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega):
-    
-    if np.abs(np.tan(phi_m)) > 1e-9 :
+    if np.abs(np.tan(phi_m)) > 1e9 :
         ymp, ymm = r_m[1] + dr_m[1]/2, r_m[1] - dr_m[1]/2
         xmp, xmm = (ymp - y0) / np.tan(phi_m) + x0, (ymm - y0) / np.tan(phi_m) + x0
         pp, pm = np.array([xmp, ymp]), np.array([xmm, ymm])
@@ -72,11 +54,35 @@ def ImderYGreen_function(t_n, r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega)
     #polypartp = -(r_m[1] + dr_m[1]/2 - r_n[1] - dr_n[1] * (t_n - 1/2))
     #polypartm = (r_m[1] - dr_m[1]/2 - r_n[1] - dr_n[1] * (t_n - 1/2))
     dr = np.linalg.norm(dr_n)
-    return (dr*(polypartp * (1 + 1j * omega/c * rmnp) / rmnp**3 * np.exp(-1j * omega/c * rmnp) + polypartm * (1 + 1j * omega/c * rmnm) / rmnm**3 * np.exp(-1j * omega/c * rmnm))).imag
+    return ((polypartp * (1 + 1j * omega/c * rmnp) / rmnp**3 * np.exp(-1j * omega/c * rmnp) + polypartm * (1 + 1j * omega/c * rmnm) / rmnm**3 * np.exp(-1j * omega/c * rmnm))).real
+
+def ImderYGreen_function(t_n, r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega):
+    
+    if np.abs(np.tan(phi_m)) > 1e9 :
+        ymp, ymm = r_m[1] + dr_m[1]/2, r_m[1] - dr_m[1]/2
+        xmp, xmm = (ymp - y0) / np.tan(phi_m) + x0, (ymm - y0) / np.tan(phi_m) + x0
+        pp, pm = np.array([xmp, ymp]), np.array([xmm, ymm])
+        polypartp = -((xmp - dr_n[0] - dr_n[0] * (t_n - 1/2))/np.tan(phi_m) + (ymp - dr_n[1] - dr_n[1] * (t_n - 1/2)))
+        polypartm =  ((xmm - dr_n[0] - dr_n[0] * (t_n - 1/2))/np.tan(phi_m) + (ymm - dr_n[1] - dr_n[1] * (t_n - 1/2)))
+    else :
+        ymp, ymm = r_m[1] + dr_m[1]/2, r_m[1] - dr_m[1]/2
+        xmp, xmm = x0, x0
+        pp, pm = np.array([xmp, ymp]), np.array([xmm, ymm])
+        polypartp = -((ymp - dr_n[1] - dr_n[1] * (t_n - 1/2)))
+        polypartm =  ((ymm - dr_n[1] - dr_n[1] * (t_n - 1/2)))
+    
+    rmnp = np.linalg.norm(r_m + dr_m/2 - r_n - dr_n * (t_n - 1/2))
+    rmnm = np.linalg.norm(r_m - dr_m/2 - r_n - dr_n * (t_n - 1/2))
+    
+    #rmnp = np.linalg.norm(r_m + dr_m/2 - r_n - dr_n * (t_n - 1/2))
+    #rmnm = np.linalg.norm(r_m - dr_m/2 - r_n - dr_n * (t_n - 1/2))
+    #polypartp = -(r_m[1] + dr_m[1]/2 - r_n[1] - dr_n[1] * (t_n - 1/2))
+    #polypartm = (r_m[1] - dr_m[1]/2 - r_n[1] - dr_n[1] * (t_n - 1/2))
+    dr = np.linalg.norm(dr_n)
+    return ((polypartp * (1 + 1j * omega/c * rmnp) / rmnp**3 * np.exp(-1j * omega/c * rmnp) + polypartm * (1 + 1j * omega/c * rmnm) / rmnm**3 * np.exp(-1j * omega/c * rmnm))).imag
 
 def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
-    if m == n and i == j: 
-        return 0
+
     phi_m, phi_n = antenna.angle[m], antenna.angle[n]
     a_m, a_n = antenna.radius[m], antenna.radius[n]
     x0, y0 = antenna.position[m]
@@ -107,7 +113,7 @@ def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
         else :
             Z_xy = 1j*mu0*c**2 / (4*np.pi*omega)* np.sin(phi_n + phi_m) / np.cos(phi_m) *  (integrate.quad(RederXGreen_function, 0, 1, args=(r_m, r_n, dr_m, dr_n, phi_m, phi_n, omega))[0] + 1j * integrate.quad(ImderXGreen_function, 0, 1, args=(r_m, r_n, dr_m, dr_n, phi_m, phi_n, omega))[0])
     else :
-        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * (integrate.quad(RederYGreen_function, 0, 1, args=(r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega))[0] + 1j * integrate.quad(ImderYGreen_function, 0, 1, args=(r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega))[0])
+        Z_y = delta_r * 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * (integrate.quad(RederYGreen_function, 0, 1, args=(r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega))[0] + 1j * integrate.quad(ImderYGreen_function, 0, 1, args=(r_m, r_n, dr_m, dr_n, phi_m, phi_n, x0, y0, omega))[0])
     return Z_dphi + Z_x + Z_y + Z_xy
 
 def calculate_field (antenna, R_block, driven_voltage, delta_r) :
