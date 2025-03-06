@@ -6,24 +6,26 @@ from tqdm import tqdm
 c, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 
 def ReGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+    k = omega/c
     rmn = np.linalg.norm(r_m - r_n + dr_m*(t_m-1/2) - dr_n*(t_n-1/2))
-    return np.cos(-1j * omega/c * rmn) / rmn
+    return np.cos(-1j * k * rmn) / rmn
 
 def ImGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+    k = omega/c
     rmn = np.linalg.norm(r_m - r_n + dr_m*(t_m-1/2) - dr_n*(t_n-1/2))
-    return np.sin(-1j * omega/c * rmn) / rmn
+    return np.sin(-1j * k * rmn) / rmn
 
 def RederderXGreen_function(t_n, r_m, r_n, dr_m, dr_n, omega):
-    t_m = 1/2
+    t_m, k = 1/2, omega/c
     R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
     pR_px = (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) / R 
     p2R_px2 = 1/R - (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) * pR_px / R**2
-    polypart1 = -(1j * omega/c / R**2 - (1 + 1j * omega/c * R) * 1j * omega/c / R**2 - 2 * (1 + 1j * omega/c * R) / R**3)
-    polypart2 = -(1 + 1j * omega/c * R) / R**2
-    return ((polypart1 * pR_px ** 2 + polypart2 * p2R_px2) * np.exp(-1j * omega/c * R)).real
+    polypart1 = -(1j * k / R**2 - (1 + 1j * k * R) * 1j * k / R**2 - 2 * (1 + 1j * k * R) / R**3)
+    polypart2 = -(1 + 1j * k * R) / R**2
+    return ((polypart1 * pR_px ** 2 + polypart2 * p2R_px2) * np.exp(-1j * k * R)).real
     
 def ImderderXGreen_function(t_n, r_m, r_n, dr_m, dr_n, omega):
-    t_m = 1/2
+    t_m, k = 1/2, omega/c
     R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
     pR_px = (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) / R 
     p2R_px2 = 1/R - (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) * pR_px / R**2
