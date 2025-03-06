@@ -13,7 +13,7 @@ def calculate_positions(antenna, delta_r):
     
     R_block = [0] * len(element_num)
     for m in range (0, len(element_num)):
-        R_block[m] = np.zeros((element_num[m], 2), dtype=np.float64)
+        R_block[m] = np.zeros((element_num[m], 2))
         delta_x = delta_r * np.cos(antenna.angle[m])
         delta_y = delta_r * np.sin(antenna.angle[m])
         for i in range (0, len(R_block[m])):
@@ -21,7 +21,7 @@ def calculate_positions(antenna, delta_r):
             R_block[m][i, 1] =  antenna.position[m, 1] - element_num[m]*delta_y/2 + delta_y * (1/2 + i)
     
     num_elements = sum(element_num)
-    R = np.zeros((sum(element_num),2), dtype = np.float64)
+    R = np.zeros((sum(element_num),2))
     cum_n = np.append(0, np.cumsum(element_num))
     for i in range (len(cum_n) - 1):
         R[cum_n[i]:cum_n[i+1]] = R_block[i]
