@@ -15,7 +15,7 @@ def ImGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     rmn = np.linalg.norm(r_m - r_n + dr_m*(t_m-1/2) - dr_n*(t_n-1/2))
     return np.sin(- k * rmn) / rmn
 
-def RederderXGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+def RederderXXGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     k = omega/c
     R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
     pR_px = (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) / R 
@@ -24,7 +24,7 @@ def RederderXGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     polypart2 = -(1 + 1j * k * R) / R**2
     return ((polypart1 * pR_px ** 2 + polypart2 * p2R_px2) * np.exp(-1j * k * R)).real
     
-def ImderderXGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+def ImderderXXGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     k = omega/c
     R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
     pR_px = (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) / R 
@@ -33,25 +33,43 @@ def ImderderXGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     polypart2 = -(1 + 1j * k * R) / R**2
     return ((polypart1 * pR_px ** 2 + polypart2 * p2R_px2) * np.exp(-1j * k * R)).imag
 
-def RederderYGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+def RederderYYGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     k = omega/c
     R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
-    pR_px = (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R 
-    p2R_px2 = 1/R - (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2))**2 / R**3
+    pR_py = (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R 
+    p2R_py2 = 1/R - (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2))**2 / R**3
     polypart1 = -(1j * k / R**2 - (1 + 1j * k * R) * 1j * k / R**2 - 2 * (1 + 1j * k * R) / R**3)
     polypart2 = -(1 + 1j * k * R) / R**2
-    return ((polypart1 * pR_px ** 2 + polypart2 * p2R_px2) * np.exp(-1j * k * R)).real
+    return ((polypart1 * pR_py ** 2 + polypart2 * p2R_py2) * np.exp(-1j * k * R)).real
     
-def ImderderYGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+def ImderderYYGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     k = omega/c
     R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
-    pR_px = (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R 
-    p2R_px2 = 1/R - (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2))**2 / R**3
+    pR_py = (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R 
+    p2R_py2 = 1/R - (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2))**2 / R**3
     polypart1 = -(1j * k / R**2 - (1 + 1j * k * R) * 1j * k / R**2 - 2 * (1 + 1j * k * R) / R**3)
     polypart2 = -(1 + 1j * k * R) / R**2
-    return ((polypart1 * pR_px ** 2 + polypart2 * p2R_px2) * np.exp(-1j * k * R)).imag
+    return ((polypart1 * pR_py ** 2 + polypart2 * p2R_py2) * np.exp(-1j * k * R)).imag
 
+def RederderXYGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+    k = omega/c
+    R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
+    pR_px = (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) / R 
+    pR_py = (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R
+    p2R_pxy = - (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) * (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R**3
+    polypart1 = -(1j * k / R**2 - (1 + 1j * k * R) * 1j * k / R**2 - 2 * (1 + 1j * k * R) / R**3) 
+    polypart2 = -(1 + 1j * k * R) / R**2
+    return ((polypart1 * pR_px * pR_py + polypart2 * p2R_pxy) * np.exp(-1j * k * R)).real
 
+def ImderderXYGreen_function(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
+    k = omega/c
+    R = np.linalg.norm(r_m + dr_m * (t_m - 1/2) - r_n - dr_n * (t_n - 1/2))
+    pR_px = (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) / R 
+    pR_py = (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R
+    p2R_pxy = - (r_m[0] + dr_m[0] * (t_m - 1/2) - r_n[0] - dr_n[0] * (t_n - 1/2)) * (r_m[1] + dr_m[1] * (t_m - 1/2) - r_n[1] - dr_n[1] * (t_n - 1/2)) / R**3
+    polypart1 = -(1j * k / R**2 - (1 + 1j * k * R) * 1j * k / R**2 - 2 * (1 + 1j * k * R) / R**3) 
+    polypart2 = -(1 + 1j * k * R) / R**2
+    return ((polypart1 * pR_px * pR_py + polypart2 * p2R_pxy) * np.exp(-1j * k * R)).imag
 
 def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
 
@@ -65,18 +83,22 @@ def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
     dr_n = delta_r * np.array([np.cos(phi_n), np.sin(phi_n)])
     
     
-    Z_dphi = 1j*omega*mu0 / (4*np.pi) * np.cos(phi_m - phi_n) * delta_r * (integrate.dblquad(ReGreen_function, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImGreen_function, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega))[0])
-    Z_xy = 0
+    Z_dphi = 1j*omega*mu0 / (4*np.pi) * np.cos(phi_m - phi_n) * delta_r**2 * (integrate.dblquad(ReGreen_function, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImGreen_function, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega))[0])
+    
+    if np.sin(phi_n + phi_m) <= 1e-9 :
+        Z_xy = 0
+    else :
+        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2  * (integrate.dblquad(RederderXYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
     
     if np.sin(phi_n) <= 1e-9 or np.sin(phi_m) <= 1e-9 :
         Z_y = 0
     else :       
-        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * np.sin(phi_m) * delta_r  * (integrate.dblquad(RederderYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * np.sin(phi_m) * delta_r**2 * (integrate.dblquad(RederderYYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderYYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
 
     if np.cos(phi_n) <= 1e-9 or np.cos(phi_m) <= 1e-9 :
         Z_x = 0
     else :
-        Z_x = 1j/(4*np.pi * omega * eps0) * np.cos(phi_n) * np.cos(phi_m) * delta_r  * (integrate.dblquad(RederderXGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_x = 1j/(4*np.pi * omega * eps0) * np.cos(phi_n) * np.cos(phi_m) * delta_r**2  * (integrate.dblquad(RederderXXGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXXGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
     
     return Z_dphi+Z_x+Z_y+Z_xy
 
