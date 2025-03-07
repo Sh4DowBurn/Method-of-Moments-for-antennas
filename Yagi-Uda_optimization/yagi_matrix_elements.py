@@ -47,7 +47,7 @@ def Zmn_single(r_n, r_m, omega, dz, wire_radius):
         r_m + np.array([0, wire_radius, 0]), omega)
     
     # Calculate to part of matrix
-    Z_1 = integrate.quad(ReZGreen_function, r_n[2]-dz/2, r_n[2]+dz/2)[0] + 1j * integrate.quad(ImZGreen_function, r_n[2]-dz/2, r_n[2]+dz/2)[0]
+    Z_1 =  integrate.quad(ReZGreen_function, r_n[2]-dz/2, r_n[2]+dz/2)[0] + 1j * integrate.quad(ImZGreen_function, r_n[2]-dz/2, r_n[2]+dz/2)[0]
     Z_2 = ZderGreen_function(r_n[2] + dz/2) - ZderGreen_function(r_n[2] - dz/2)
     return Z_1 + Z_2
             
