@@ -49,7 +49,7 @@ def Zmn_single(r_n, r_m, omega, dz, wire_radius):
     # Calculate to part of matrix
     Z_1 =  integrate.quad(ReZGreen_function, r_n[2]-dz/2, r_n[2]+dz/2)[0] + 1j * integrate.quad(ImZGreen_function, r_n[2]-dz/2, r_n[2]+dz/2)[0]
     Z_2 = ZderGreen_function(r_n[2] + dz/2) - ZderGreen_function(r_n[2] - dz/2)
-    return Z_1 + Z_2
+    return dz*Z_1 + dz*Z_2
             
             
 def calculate_impedance_Pocklington (R, element_num, wire_radius, delta_z, omega):
@@ -84,7 +84,7 @@ def calculate_voltage_Pocklington (R, element_num, source_position, driven_volta
         for i in range (len(R[m])):
             for k in range(len(source_position)):
                 if all(source_position[k] == R[m][i,:]) :
-                    field_row[i] = (driven_voltage / delta_z)
+                    field_row[i] = (driven_voltage)
                 #!    field_row[i] = driven_voltage
         field_block.append(field_row)
     #* Deploying a block matrix (reshape)

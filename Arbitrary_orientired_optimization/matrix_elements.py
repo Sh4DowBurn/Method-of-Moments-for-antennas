@@ -88,7 +88,7 @@ def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
     if np.sin(phi_n + phi_m) <= 1e-9 :
         Z_xy = 0
     else :
-        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2  * (integrate.dblquad(RederderXYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2 * (integrate.dblquad(RederderXYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXYGreen_function, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
     
     if np.sin(phi_n) <= 1e-9 or np.sin(phi_m) <= 1e-9 :
         Z_y = 0
@@ -114,7 +114,7 @@ def calculate_field (antenna, R_block, driven_voltage, delta_r) :
         for i in range (len(R_block[m])):
             for k in range(len(antenna.source_position)):
                 if all(antenna.source_position[k] == R_block[m][i,:]) :
-                    field_row[i] = (driven_voltage / delta_r)
+                    field_row[i] = (driven_voltage)
         field_block.append(field_row)
         
     incident_field = np.zeros((sum(element_num)), dtype = float)
