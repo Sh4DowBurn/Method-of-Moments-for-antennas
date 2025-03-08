@@ -46,7 +46,7 @@ def plot_antenna (R_block, R, antenna, delta_r):
     ax.set_xlim(min(R[:,0])-0.1, max(R[:,0])+0.1)
     ax.set_ylim(min(R[:,1])-0.1, max(R[:,1]+0.1))
 
-    
+    ax.axis('equal')
     ax.set_title('2D Model of antenna', size = 14)
     ax.set_xlabel('X position, m', size = 12)
     ax.set_ylabel('Y position, m', size = 12)
@@ -54,3 +54,40 @@ def plot_antenna (R_block, R, antenna, delta_r):
     ax.grid(True)
 
     plt.show()
+
+def current_disribution_together (R_block, element_currents) :
+    cmap = plt_cmaps['hot']
+    for i in range (len(R_block)):
+        plt.plot(R_block[i][:,1], np.abs(element_currents[i]*1000), zorder = np.inf, label = f'element {1+i}', color = cmap((i)/len(R_block)))
+
+    plt.title(f"Current distribution ({sum(len(element_currents[i]) for i in range(len(element_currents)))} elements)", size = 13)
+    plt.ylabel("Induced current (mA)", size = 12)
+    plt.xlabel("Y position (m)", size = 12)
+    plt.grid(zorder = 0)
+    plt.legend()
+    
+def current_distribution_2d (R, current):
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=R[:,0],
+        y=R[:,1] ,
+        mode='markers',
+        marker=dict(
+            size=10,
+            color=np.abs(current),
+            colorscale='plasma',
+            showscale=True,
+            colorbar=dict(title='Amplitude of current, A')
+        ),
+        name='Точки'
+    ))
+    fig.update_layout(
+        title='Induced current distribution',
+        xaxis_title='Y position, m',
+        yaxis_title='Z position, m',
+        xaxis=dict(scaleanchor="y"),
+        yaxis=dict(scaleanchor="x")
+    )
+    fig.show()
