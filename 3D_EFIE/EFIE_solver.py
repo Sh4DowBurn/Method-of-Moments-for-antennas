@@ -1,13 +1,13 @@
-import matrix_elements as calc
 import geometry as gm
+import matrix_elements as matrix
 import numpy as np
 
-def directional_pattern(antenna, incident_voltage, frequency, delta_r):
-    R_block, R = gm.calculate_positions(antenna=antenna, delta_r=delta_r)
-    impedance = calc.calculate_impedance(antenna=antenna, R_block=R_block, delta_r=delta_r, frequency=frequency)
-    voltage = calc.calculate_voltage(antenna=antenna, R_block=R_block, driven_voltage=incident_voltage, delta_r=delta_r)
-    current = np.linalg.solve(impedance, voltage)
+def calculate_currents(antenna, source_position, incident_voltage, frequency, radius, delta_r):
     
+    R_block, R = gm.calculate_positions(antenna=antenna, delta_r=delta_r)
+    voltage_block, voltage = matrix.calculate_voltage(R_block=R_block, driven_voltage=incident_voltage, delta_r=delta_r, source_position=source_position)
+    impedance = matrix.calculate_impedance(antenna, R_block, delta_r, radius, frequency)
+    current = np.linalg.solve(impedance, voltage)
     element_num = []
     for i in range (len(R_block)):
         element_num.append(len(R_block[i]))
