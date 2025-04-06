@@ -16,7 +16,7 @@ def calculate_voltage (antenna, R_block, driven_voltage, delta_r) :
         field_row = np.zeros(len(R_block[m]))
         for i in range (len(R_block[m])):
             for k in range(len(antenna.source_position)):
-                if all(antenna.source_position[k] == R_block[m][i,:]) :
+                if np.linalg.norm(antenna.source_position[k] - R_block[m][i,:]) <= delta_r/2 :
                     field_row[i] = (driven_voltage)
         field_block.append(field_row)
         
@@ -437,7 +437,7 @@ def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
     
     r_m = R_block[m][i] + np.array([-a_m*np.sin(phi_m), a_m*np.cos(phi_m)])
     r_n = R_block[n][j]
-    
+
     if np.linalg.norm(r_m - r_n) < 3e-2 :
         return Zmn_double(m, n, i, j, antenna, R_block, delta_r, omega)
     else :
@@ -451,20 +451,24 @@ def calculate_impedance (antenna, R_block, delta_r, frequency):
     element_num = np.array(element_num)
     
     impedance_block = []
-    for m in range(0, len(R_block)):
+    for m in tqdm(range(0, len(R_block))):
         impedance_row = []
         for n in range (0, len(R_block)):
-            impedance_mn = np.zeros((len(R_block[m]), len(R_block[n])), dtype = complex)
-            if m == n or np.abs(antenna.angle[n]-antenna.angle[m]) <= 1e-9 :
-                for i in range (len(R_block[m]) + len(R_block[n])):
-                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
-                    for k in range (min( min(len(R_block[m]), len(R_block[n])), i+1, len(R_block[m]) + len(R_block[n]) - i)):
-                        impedance_mn[max(0, len(R_block[m])-i-1) + k, max(0, i-len(R_block[m])) + k] = impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))]
-            else :
-                for i in range(len(R_block[m])):
-                    for j in range(len(R_block[n])):
+            if m <= n :
+                impedance_mn = np.zeros((len(R_block[m]), len(R_block[n])), dtype = complex)
+                if m == n or np.abs(antenna.angle[n]-antenna.angle[m]) <= 1e-9 :
+                    for i in range (len(R_block[m]) + len(R_block[n])):
                         impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                        for k in range (min( min(len(R_block[m]), len(R_block[n])), i+1, len(R_block[m]) + len(R_block[n]) - i)):
+                            impedance_mn[max(0, len(R_block[m])-i-1) + k, max(0, i-len(R_block[m])) + k] = impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))]
+                else :
+                    for i in range(len(R_block[m])):
+                        for j in range(len(R_block[n])):
+                            impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+            else :
+                impedance_mn = impedance_block[n][m].T
             impedance_row.append(impedance_mn)   
+                
         impedance_block.append(impedance_row)
     
     num_elements = sum(element_num)

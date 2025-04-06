@@ -9,7 +9,7 @@ light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 def calculate_positions(antenna, delta_r):
     element_num  = np.zeros(len(antenna.length), dtype = int)
     for i in range (len(antenna.length)):
-        element_num[i] = int(antenna.length[i]/delta_r) if int(antenna.length[i]/delta_r)%2!=0 else int(antenna.length[i]/delta_r)+1
+        element_num[i] = int(antenna.length[i]/delta_r)+1
     
     R_block = [0] * len(element_num)
     for m in range (0, len(element_num)):
@@ -18,9 +18,8 @@ def calculate_positions(antenna, delta_r):
         delta_y = delta_r * np.sin(antenna.angle[m])
         for i in range (0, len(R_block[m])):
             R_block[m][i, 0] = antenna.position[m, 0] - element_num[m]*delta_x/2 + delta_x * (1/2 + i)
-            R_block[m][i, 1] =  antenna.position[m, 1] - element_num[m]*delta_y/2 + delta_y * (1/2 + i)
+            R_block[m][i, 1] = antenna.position[m, 1] - element_num[m]*delta_y/2 + delta_y * (1/2 + i)
     
-    num_elements = sum(element_num)
     R = np.zeros((sum(element_num),2))
     cum_n = np.append(0, np.cumsum(element_num))
     for i in range (len(cum_n) - 1):
@@ -38,7 +37,7 @@ def plot_antenna (R_block, R, antenna, delta_r):
     for m in range (len(R_block)):
         for i in range(len(R_block[m])):
             for k in range(len(antenna.source_position)):
-                if all(antenna.source_position[k] == R_block[m][i]):
+                if np.linalg.norm(antenna.source_position[k] - R_block[m][i]) <= delta_r/2 :
                     delta_x = delta_r * np.sin(antenna.angle[m])
                     delta_y = delta_r * np.cos(antenna.angle[m])
                     plt.errorbar(np.array(R_block[m][i,0]),np.array(R_block[m][i,1]), linestyle = "none", marker = '.', markersize = '5', zorder = np.inf, color = 'red')
@@ -55,7 +54,17 @@ def plot_antenna (R_block, R, antenna, delta_r):
 
     plt.show()
 
-def current_disribution_together (R_block, element_currents) :
+def current_disribution_together (R_block, current) :
+    element_num = []
+    for i in range (len(R_block)):
+        element_num.append(len(R_block[i]))
+    element_num = np.array(element_num)
+    
+    element_currents = []
+    cum_n = np.append(0, np.cumsum(element_num))
+    for i in range (len(cum_n)-1):
+        element_currents.append(current[cum_n[i]:cum_n[i+1]])
+    
     cmap = plt_cmaps['hot']
     for i in range (len(R_block)):
         plt.plot(R_block[i][:,1], np.abs(element_currents[i]*1000), zorder = np.inf, label = f'element {1+i}', color = cmap((i)/len(R_block)))
@@ -91,3 +100,9 @@ def current_distribution_2d (R, current):
         yaxis=dict(scaleanchor="x")
     )
     fig.show()
+    
+def dp(E_total, angles):
+    plt.polar(angles, E_total, label = 'Far field, H/m', color = 'red')
+    plt.title("Directional pattern (146 MHz)")
+    plt.legend()
+    plt.show()
