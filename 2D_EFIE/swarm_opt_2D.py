@@ -99,11 +99,11 @@ options = {
 }
 
 structure_type = 'polygonal chain'
-vertex_num = 5
+vertex_num = 4
 dimensions = vertex_num * 2
-n_particles = 2
+n_particles = 10
 wavelength = light_speed / frequency
-iters = 1
+iters = 10
 
 low_bound = -wavelength/2
 up_bound = wavelength/2

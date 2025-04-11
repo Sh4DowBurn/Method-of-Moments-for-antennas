@@ -9,7 +9,7 @@ light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 def calculate_positions(antenna, delta_r):
     element_num  = np.zeros(len(antenna.length), dtype = int)
     for i in range (len(antenna.length)):
-        element_num[i] = int(antenna.length[i]/delta_r)+1
+        element_num[i] = int((antenna.length[i]/delta_r))
     
     R_block = [0] * len(element_num)
     for m in range (0, len(element_num)):
@@ -17,9 +17,13 @@ def calculate_positions(antenna, delta_r):
         delta_x = delta_r * np.cos(antenna.angle[m])
         delta_y = delta_r * np.sin(antenna.angle[m])
         for i in range (0, len(R_block[m])):
-            R_block[m][i, 0] = antenna.position[m, 0] - element_num[m]*delta_x/2 + delta_x * (1/2 + i)
-            R_block[m][i, 1] = antenna.position[m, 1] - element_num[m]*delta_y/2 + delta_y * (1/2 + i)
-    
+            buf_x, buf_y = 0, 0
+            if m != 0 :
+                buf_x = delta_x/2
+                buf_y = delta_y/2
+            R_block[m][i, 0] = buf_x + antenna.position[m, 0] - element_num[m]*delta_x/2 + delta_x * (1/2 + i)
+            R_block[m][i, 1] = buf_y + antenna.position[m, 1] - element_num[m]*delta_y/2 + delta_y * (1/2 + i)
+            
     R = np.zeros((sum(element_num),2))
     cum_n = np.append(0, np.cumsum(element_num))
     for i in range (len(cum_n) - 1):
@@ -73,7 +77,7 @@ def current_disribution_together (R_block, current) :
     plt.ylabel("Induced current (mA)", size = 12)
     plt.xlabel("Y position (m)", size = 12)
     plt.grid(zorder = 0)
-    plt.legend()
+    # plt.legend()
     
 def current_distribution_2d (R, current):
 
