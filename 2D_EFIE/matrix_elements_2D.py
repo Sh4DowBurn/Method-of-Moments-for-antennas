@@ -5,7 +5,9 @@ import scipy.integrate as integrate
 from tqdm import tqdm
 c, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 
-def calculate_voltage (antenna, R_block, driven_voltage, delta_r) :
+epsabs, epsrel = 1e-6, 1e-6
+
+def calculate_voltage (source_position, R_block, driven_voltage, delta_r) :
     element_num = []
     for i in range (len(R_block)):
         element_num.append(len(R_block[i]))
@@ -15,8 +17,8 @@ def calculate_voltage (antenna, R_block, driven_voltage, delta_r) :
     for m in range (len(R_block)):
         field_row = np.zeros(len(R_block[m]))
         for i in range (len(R_block[m])):
-            for k in range(len(antenna.source_position)):
-                if np.linalg.norm(antenna.source_position[k] - R_block[m][i,:]) <= delta_r/2 :
+            for k in range(len(source_position)):
+                if np.linalg.norm(source_position[k] - R_block[m][i,:]) <= delta_r/2 :
                     field_row[i] = (driven_voltage)
         field_block.append(field_row)
         
@@ -92,10 +94,10 @@ def ImderderXYGreen_function_double(t_m, t_n, r_m, r_n, dr_m, dr_n, omega):
     polypart2 = -(1 + 1j * k * R) / R**2
     return ((polypart1 * pR_px * pR_py + polypart2 * p2R_pxy) * np.exp(-1j * k * R)).imag
 
-def Zmn_double (m, n, i, j, antenna, R_block, delta_r, omega):
+def Zmn_double (m, n, i, j, angles, radii, R_block, delta_r, omega):
 
-    phi_m, phi_n = antenna.angle[m], antenna.angle[n]
-    a_m, a_n = antenna.radius[m], antenna.radius[n]
+    phi_m, phi_n = angles[m], angles[n]
+    a_m, a_n = radii[m], radii[n]
     
     r_m = R_block[m][i] + np.array([-a_m*np.sin(phi_m), a_m*np.cos(phi_m)])
     r_n = R_block[n][j]
@@ -104,26 +106,26 @@ def Zmn_double (m, n, i, j, antenna, R_block, delta_r, omega):
     dr_n = delta_r * np.array([np.cos(phi_n), np.sin(phi_n)])
     
     
-    Z_dphi = 1j*omega*mu0 / (4*np.pi) * np.cos(phi_m - phi_n) * delta_r**2 * (integrate.dblquad(ReGreen_function_double, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImGreen_function_double, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega))[0])
+    Z_dphi = 1j*omega*mu0 / (4*np.pi) * np.cos(phi_m - phi_n) * delta_r**2 * (integrate.dblquad(ReGreen_function_double, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.dblquad(ImGreen_function_double, 0, 1, lambda x: 0, lambda x: 1, args=(r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
     
     if np.sin(phi_n + phi_m) <= 1e-9 :
         Z_xy = 0
     else :
-        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2 * (integrate.dblquad(RederderXYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2 * (integrate.dblquad(RederderXYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.dblquad(ImderderXYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
     
     if np.sin(phi_n) <= 1e-9 or np.sin(phi_m) <= 1e-9 :
         Z_y = 0
     else :       
-        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * np.sin(phi_m) * delta_r**2 * (integrate.dblquad(RederderYYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderYYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * np.sin(phi_m) * delta_r**2 * (integrate.dblquad(RederderYYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.dblquad(ImderderYYGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
 
     if np.cos(phi_n) <= 1e-9 or np.cos(phi_m) <= 1e-9 :
         Z_x = 0
     else :
-        Z_x = 1j/(4*np.pi * omega * eps0) * np.cos(phi_n) * np.cos(phi_m) * delta_r**2  * (integrate.dblquad(RederderXXGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.dblquad(ImderderXXGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_x = 1j/(4*np.pi * omega * eps0) * np.cos(phi_n) * np.cos(phi_m) * delta_r**2  * (integrate.dblquad(RederderXXGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.dblquad(ImderderXXGreen_function_double, 0, 1, lambda z1: 0, lambda z2: 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
     
     return Z_dphi+Z_x+Z_y+Z_xy
 
-def calculate_impedance_double (antenna, R_block, delta_r, frequency):
+def calculate_impedance_double (R_block, angles, radii, delta_r, frequency):
     element_num = []
     for i in range (len(R_block)):
         element_num.append(len(R_block[i]))
@@ -133,16 +135,16 @@ def calculate_impedance_double (antenna, R_block, delta_r, frequency):
     for m in range(0, len(R_block)):
         impedance_row = []
         for n in range (0, len(R_block)):
-            if m == n or np.abs(antenna.angle[n]-antenna.angle[m]) <= 1e-9 :
+            if m == n or np.abs(angles[n]-angles[m]) <= 1e-9 :
                 impedance_mn = np.zeros((len(R_block[m]), len(R_block[n])), dtype = complex)
                 for i in range (len(R_block[m]) + len(R_block[n])):
-                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_double(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_double(m=m,n=n,i=max(0, len(R_block[m])-i-1),j=max(0, i-len(R_block[m])), angles=angles, radii=radii, R_block=R_block, delta_r=delta_r, omega=2*np.pi*frequency)
                     for k in range (min( min(len(R_block[m]), len(R_block[n])), i+1, len(R_block[m]) + len(R_block[n]) - i)):
                         impedance_mn[max(0, len(R_block[m])-i-1) + k, max(0, i-len(R_block[m])) + k] = impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))]
             else :
                 for i in range(len(R_block[m])):
                     for j in range(len(R_block[n])):
-                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_double(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_double(m=m,n=n,i=max(0, len(R_block[m])-i-1),j=max(0, i-len(R_block[m])), angles=angles, radii=radii, R_block=R_block, delta_r=delta_r, omega=2*np.pi*frequency)
             impedance_row.append(impedance_mn)   
         impedance_block.append(impedance_row)
     
@@ -229,10 +231,10 @@ def ImderderXYGreen_function_single(t_n, r_m, r_n, dr_m, dr_n, omega):
     polypart2 = -(1 + 1j * k * R) / R**2
     return ((polypart1 * pR_px * pR_py + polypart2 * p2R_pxy) * np.exp(-1j * k * R)).imag
 
-def Zmn_single (m, n, i, j, antenna, R_block, delta_r, omega):
+def Zmn_single (m, n, i, j, angles, radii, R_block, delta_r, omega):
 
-    phi_m, phi_n = antenna.angle[m], antenna.angle[n]
-    a_m, a_n = antenna.radius[m], antenna.radius[n]
+    phi_m, phi_n = angles[m], angles[n]
+    a_m, a_n = radii[m], radii[n]
     
     r_m = R_block[m][i] + np.array([-a_m*np.sin(phi_m), a_m*np.cos(phi_m)])
     r_n = R_block[n][j]
@@ -241,26 +243,26 @@ def Zmn_single (m, n, i, j, antenna, R_block, delta_r, omega):
     dr_n = delta_r * np.array([np.cos(phi_n), np.sin(phi_n)])
     
     
-    Z_dphi = 1j*omega*mu0 / (4*np.pi) * np.cos(phi_m - phi_n) * delta_r**2 * (integrate.quad(ReGreen_function_single, 0, 1, args=(r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.quad(ImGreen_function_single, 0, 1, args=(r_m, r_n, dr_m, dr_n, omega))[0])
+    Z_dphi = 1j*omega*mu0 / (4*np.pi) * np.cos(phi_m - phi_n) * delta_r**2 * (integrate.quad(ReGreen_function_single, 0, 1, args=(r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.quad(ImGreen_function_single, 0, 1, args=(r_m, r_n, dr_m, dr_n, omega), epsabs=1e-6, epsrel=1e-6)[0])
     
     if np.sin(phi_n + phi_m) <= 1e-9 :
         Z_xy = 0
     else :
-        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2 * (integrate.quad(RederderXYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.quad(ImderderXYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_xy = 1j/(4*np.pi * omega * eps0) * np.sin(phi_m + phi_n) * delta_r**2 * (integrate.quad(RederderXYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.quad(ImderderXYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
     
     if np.sin(phi_n) <= 1e-9 or np.sin(phi_m) <= 1e-9 :
         Z_y = 0
     else :       
-        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * np.sin(phi_m) * delta_r**2 * (integrate.quad(RederderYYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.quad(ImderderYYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_y = 1j/(4*np.pi * omega * eps0) * np.sin(phi_n) * np.sin(phi_m) * delta_r**2 * (integrate.quad(RederderYYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.quad(ImderderYYGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
 
     if np.cos(phi_n) <= 1e-9 or np.cos(phi_m) <= 1e-9 :
         Z_x = 0
     else :
-        Z_x = 1j/(4*np.pi * omega * eps0) * np.cos(phi_n) * np.cos(phi_m) * delta_r**2  * (integrate.quad(RederderXXGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega))[0] + 1j * integrate.quad(ImderderXXGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega))[0])
+        Z_x = 1j/(4*np.pi * omega * eps0) * np.cos(phi_n) * np.cos(phi_m) * delta_r**2  * (integrate.quad(RederderXXGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0] + 1j * integrate.quad(ImderderXXGreen_function_single, 0, 1, args = (r_m, r_n, dr_m, dr_n, omega), epsabs=epsabs, epsrel=epsrel)[0])
     
     return Z_dphi+Z_x+Z_y+Z_xy
 
-def calculate_impedance_single (antenna, R_block, delta_r, frequency):
+def calculate_impedance_single (R_block, angles, radii, delta_r, frequency):
     element_num = []
     for i in range (len(R_block)):
         element_num.append(len(R_block[i]))
@@ -270,16 +272,16 @@ def calculate_impedance_single (antenna, R_block, delta_r, frequency):
     for m in range(0, len(R_block)):
         impedance_row = []
         for n in range (0, len(R_block)):
-            if m == n or np.abs(antenna.angle[n]-antenna.angle[m]) <= 1e-9 :
+            if m == n or np.abs(angles[n]-angles[m]) <= 1e-9 :
                 impedance_mn = np.zeros((len(R_block[m]), len(R_block[n])), dtype = complex)
                 for i in range (len(R_block[m]) + len(R_block[n])):
-                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_single(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_single(m=m,n=n,i=max(0, len(R_block[m])-i-1),j=max(0, i-len(R_block[m])), angles=angles, radii=radii, R_block=R_block, delta_r=delta_r, omega=2*np.pi*frequency)
                     for k in range (min( min(len(R_block[m]), len(R_block[n])), i+1, len(R_block[m]) + len(R_block[n]) - i)):
                         impedance_mn[max(0, len(R_block[m])-i-1) + k, max(0, i-len(R_block[m])) + k] = impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))]
             else :
                 for i in range(len(R_block[m])):
                     for j in range(len(R_block[n])):
-                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_single(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_single(m=m,n=n,i=max(0, len(R_block[m])-i-1),j=max(0, i-len(R_block[m])), angles=angles, radii=radii, R_block=R_block, delta_r=delta_r, omega=2*np.pi*frequency)
             impedance_row.append(impedance_mn)   
         impedance_block.append(impedance_row)
     
@@ -367,10 +369,10 @@ def ImderderXYGreen_function_noquad(t_n, r_m, r_n, dr_m, dr_n, omega):
     polypart2 = -(1 + 1j * k * R) / R**2
     return ((polypart1 * pR_px * pR_py + polypart2 * p2R_pxy) * np.exp(-1j * k * R)).imag
 
-def Zmn_noquad (m, n, i, j, antenna, R_block, delta_r, omega):
+def Zmn_noquad (m, n, i, j, angles, radii, R_block, delta_r, omega):
 
-    phi_m, phi_n = antenna.angle[m], antenna.angle[n]
-    a_m, a_n = antenna.radius[m], antenna.radius[n]
+    phi_m, phi_n = angles[m], angles[n]
+    a_m, a_n = radii[m], radii[n]
     
     r_m = R_block[m][i] + np.array([-a_m*np.sin(phi_m), a_m*np.cos(phi_m)])
     r_n = R_block[n][j]
@@ -398,7 +400,7 @@ def Zmn_noquad (m, n, i, j, antenna, R_block, delta_r, omega):
     
     return Z_dphi+Z_x+Z_y+Z_xy
 
-def calculate_impedance_noquad (antenna, R_block, delta_r, frequency):
+def calculate_impedance_noquad (R_block, angles, radii, delta_r, frequency):
     element_num = []
     for i in range (len(R_block)):
         element_num.append(len(R_block[i]))
@@ -408,16 +410,16 @@ def calculate_impedance_noquad (antenna, R_block, delta_r, frequency):
     for m in range(0, len(R_block)):
         impedance_row = []
         for n in range (0, len(R_block)):
-            if m == n or np.abs(antenna.angle[n]-antenna.angle[m]) <= 1e-9 :
+            if m == n or np.abs(angles[n]-angles[m]) <= 1e-9 :
                 impedance_mn = np.zeros((len(R_block[m]), len(R_block[n])), dtype = complex)
                 for i in range (len(R_block[m]) + len(R_block[n])):
-                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_noquad(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                    impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_noquad(m=m,n=n,i=max(0, len(R_block[m])-i-1),j=max(0, i-len(R_block[m])), angles=angles, radii=radii, R_block=R_block, delta_r=delta_r, omega=2*np.pi*frequency)
                     for k in range (min( min(len(R_block[m]), len(R_block[n])), i+1, len(R_block[m]) + len(R_block[n]) - i)):
                         impedance_mn[max(0, len(R_block[m])-i-1) + k, max(0, i-len(R_block[m])) + k] = impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))]
             else :
                 for i in range(len(R_block[m])):
                     for j in range(len(R_block[n])):
-                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_noquad(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn_noquad(m=m,n=n,i=max(0, len(R_block[m])-i-1),j=max(0, i-len(R_block[m])), angles=angles, radii=radii, R_block=R_block, delta_r=delta_r, omega=2*np.pi*frequency)
             impedance_row.append(impedance_mn)   
         impedance_block.append(impedance_row)
     
@@ -430,21 +432,21 @@ def calculate_impedance_noquad (antenna, R_block, delta_r, frequency):
     return impedance
 
 
-def Zmn (m, n, i, j, antenna, R_block, delta_r, omega):
+def Zmn (m, n, i, j, angles, radii, R_block, delta_r, omega):
     
-    phi_m, phi_n = antenna.angle[m], antenna.angle[n]
-    a_m, a_n = antenna.radius[m], antenna.radius[n]
+    phi_m, phi_n = angles[m], angles[n]
+    a_m, a_n = radii[m], radii[n]
     
     r_m = R_block[m][i] + np.array([-a_m*np.sin(phi_m), a_m*np.cos(phi_m)])
     r_n = R_block[n][j]
 
     if np.linalg.norm(r_m - r_n) < 3e-2 :
-        return Zmn_double(m, n, i, j, antenna, R_block, delta_r, omega)
+        return Zmn_double(m, n, i, j, angles, radii, R_block, delta_r, omega)
     else :
-        return Zmn_single(m, n, i, j, antenna, R_block, delta_r, omega)
+        return Zmn_single(m, n, i, j, angles, radii, R_block, delta_r, omega)
     
 
-def calculate_impedance (antenna, R_block, delta_r, frequency):
+def calculate_impedance (R_block, angles, radii, delta_r, frequency):
     element_num = []
     for i in range (len(R_block)):
         element_num.append(len(R_block[i]))
@@ -456,15 +458,15 @@ def calculate_impedance (antenna, R_block, delta_r, frequency):
         for n in range (0, len(R_block)):
             if m <= n :
                 impedance_mn = np.zeros((len(R_block[m]), len(R_block[n])), dtype = complex)
-                if m == n or np.abs(antenna.angle[n]-antenna.angle[m]) <= 1e-9 :
+                if m == n or np.abs(angles[n]-angles[m]) <= 1e-9 :
                     for i in range (len(R_block[m]) + len(R_block[n])):
-                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                        impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), angles, radii, R_block, delta_r, 2*np.pi*frequency)
                         for k in range (min( min(len(R_block[m]), len(R_block[n])), i+1, len(R_block[m]) + len(R_block[n]) - i)):
                             impedance_mn[max(0, len(R_block[m])-i-1) + k, max(0, i-len(R_block[m])) + k] = impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))]
                 else :
                     for i in range(len(R_block[m])):
                         for j in range(len(R_block[n])):
-                            impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), antenna, R_block, delta_r, 2*np.pi*frequency)
+                            impedance_mn[max(0, len(R_block[m])-i-1), max(0, i-len(R_block[m]))] = Zmn(m,n,max(0, len(R_block[m])-i-1),max(0, i-len(R_block[m])), angles, radii, R_block, delta_r, 2*np.pi*frequency)
             else :
                 impedance_mn = impedance_block[n][m].T
             impedance_row.append(impedance_mn)   

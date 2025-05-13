@@ -1,8 +1,8 @@
 import numpy as np
 import pyswarms as ps
 import geometry as gm
-import matrix_elements as matrix
-import EFIE_solver as efie
+import matrix_elements as matrix_elements
+import EFIE as efie
 light_speed, mu0, eps0, incident_voltage, frequency = 299792458., 4*np.pi*1e-7, 8.854e-12, 10, 1e6 * 146
 omega = 2 * np.pi * frequency
 
@@ -31,8 +31,8 @@ def my_objective_function(solution):
         antenna = np.concatenate(([[0.0,0.0,0.0]], solution[s].reshape(num_elements, 3)))
         source_position = np.array([(antenna[1]+antenna[2])/2])
         R_block, R = gm.calculate_positions(antenna, delta_r)
-        impedance = matrix.calculate_impedance(antenna, R_block, delta_r, radius, frequency)
-        voltage_block, voltage = matrix.calculate_voltage(R_block, incident_voltage, source_position, delta_r)
+        impedance = matrix_elements.calculate_impedance(antenna, R_block, delta_r, radius, frequency)
+        voltage_block, voltage = matrix_elements.calculate_voltage(R_block, incident_voltage, source_position, delta_r)
         current_block, current, E_total, phi = efie.calculate_directional_pattern(antenna, source_position, incident_voltage, frequency, radius, delta_r)
         fit[s] = k_form * fit_form(E_total) + k_side * fit_side(E_total) + k_max * fit_max(E_total)
         data_currents.append(current)

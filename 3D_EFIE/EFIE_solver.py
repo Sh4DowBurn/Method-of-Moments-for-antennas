@@ -1,5 +1,5 @@
 import geometry as gm
-import matrix_elements as matrix
+import matrix_elements as matrix_elements
 import numpy as np
 
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
@@ -7,8 +7,8 @@ light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 def calculate_directional_pattern(antenna, source_position, incident_voltage, frequency, radius, delta_r):
     
     R_block, R = gm.calculate_positions(antenna=antenna, delta_r=delta_r)
-    voltage_block, voltage = matrix.calculate_voltage(R_block=R_block, driven_voltage=incident_voltage, delta_r=delta_r, source_position=source_position)
-    impedance = matrix.calculate_impedance(antenna, R_block, delta_r, radius, frequency)
+    voltage_block, voltage = matrix_elements.calculate_voltage(R_block=R_block, driven_voltage=incident_voltage, delta_r=delta_r, source_position=source_position)
+    impedance = matrix_elements.calculate_impedance(antenna, R_block, delta_r, radius, frequency)
     current = np.linalg.solve(impedance, voltage)
     element_num = []
     for i in range (len(R_block)):

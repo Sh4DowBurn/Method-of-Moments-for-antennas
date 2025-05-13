@@ -1,1 +1,1 @@
-# Method of moments for antennas
+# Метод Моментов (МоМ) для произвольной антенны 

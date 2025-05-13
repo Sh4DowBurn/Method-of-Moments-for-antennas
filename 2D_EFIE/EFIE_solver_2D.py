@@ -4,10 +4,9 @@ import numpy as np
 
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 
-def calculate_currents (antenna, incident_field, frequency, delta_r):
-    R_block, R = gm.calculate_positions(antenna=antenna, delta_r=delta_r)
-    impedance = calc.calculate_impedance(antenna=antenna, R_block=R_block, delta_r=delta_r, frequency=frequency)
-    voltage = calc.calculate_voltage(antenna=antenna, R_block=R_block, driven_voltage=incident_field, delta_r=delta_r)
+def calculate_currents (R_block, angles, radii, source_positions, incident_field, frequency, delta_r):
+    impedance = calc.calculate_impedance(R_block=R_block, angles=angles, radii=radii, delta_r=delta_r, frequency=frequency)
+    voltage = calc.calculate_voltage(source_position=source_positions, R_block=R_block, driven_voltage=incident_field, delta_r=delta_r)
     current = np.linalg.solve(impedance, voltage)
     return current
 
