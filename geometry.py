@@ -17,6 +17,9 @@ class source:
 def yagi_to_segments(antenna, basis_functions, delta_r):
     
     element_num = np.round(antenna.length / delta_r).astype(int)
+    if np.round(antenna.length / delta_r).astype(int)%2 == 0:
+        element_num += 1
+        
     segments_block = []
     source_segments = []
     

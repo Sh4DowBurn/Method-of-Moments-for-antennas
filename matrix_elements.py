@@ -8,10 +8,20 @@ c, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 def basis_func(basis_functions, t_n, r_n, dr_n):
     if basis_functions == 'pulse' :
         return 1
+    elif basis_functions == 'triangle':
+        if -1/2 <= t_n <= 1/2 :
+            return 1/2 + t_n
+        elif 1/2 <= t_n <= 3/2 :
+            return 3/2 - t_n
 
 def weight_func(basis_functions, t_m, r_m, dr_m):
     if basis_functions == 'pulse' :
         return 1
+    elif basis_functions == 'triangle':
+        if -1/2 <= t_m <= 1/2 :
+            return 1/2 + t_m
+        elif 1/2 <= t_m <= 3/2 :
+            return 3/2 - t_m
 
 def ReGreen_function_double(t_m, t_n, r_m, r_n, dr_m, dr_n, omega, basis_functions):
     k = omega/c
@@ -163,6 +173,9 @@ def Zmn_double (basis_functions, m, n, i, j, segments_block, omega, delta_r):
 
     if basis_functions == 'pulse' :
         t_min, t_max = 0, 1
+    elif basis_functions == 'triangle' :
+        t_min, t_max = -1/2, 3/2
+        
     a_m = segments_block[m][i].radius
     
     tau_m = segments_block[m][i].tau
