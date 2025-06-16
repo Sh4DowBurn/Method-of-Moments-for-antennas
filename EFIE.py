@@ -4,14 +4,14 @@ import matrix_elements as matrix_elements
 
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 
-def calc_current_distribution (structure_type, antenna, frequency, delta_r):
+def calc_current_distribution (structure_type, basis_functions, antenna, frequency, delta_r):
     
     if structure_type == 'yagi-uda':
-        segments_block, source_segments = gm.yagi_to_segments(antenna=antenna, delta_r=delta_r)
-        voltage = matrix_elements.calculate_voltage(segments_block=segments_block, source_segments=source_segments, delta_r=delta_r)
-        impedance = matrix_elements.calculate_impedance(structure_type=structure_type, segments_block=segments_block, frequency=frequency, delta_r=delta_r)
+        segments_block, source_segments = gm.yagi_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
+        voltage = matrix_elements.calculate_voltage(basis_functions=basis_functions, segments_block=segments_block, source_segments=source_segments, delta_r=delta_r)
+        impedance = matrix_elements.calculate_impedance(basis_functions=basis_functions, structure_type=structure_type, segments_block=segments_block, frequency=frequency, delta_r=delta_r)
         current = np.linalg.solve(impedance, voltage)
-        
+
         R = []
         for m in range(len(segments_block)):
             for i in range(len(segments_block[m])):
