@@ -1,8 +1,6 @@
 
 import numpy as np
 
-light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
-
 class segment:
     def __init__(self, position, tau, radius):
         self.position = position

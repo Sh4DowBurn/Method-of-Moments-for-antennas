@@ -214,7 +214,7 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
     element_num = np.array(element_num)
     
     impedance_block = []
-    for m in  tqdm(range(0, len(segments_block))):
+    for m in  range(0, len(segments_block)):
         impedance_row = []
         for n in range (0, len(segments_block)):
             impedance_mn = np.zeros((len(segments_block[m]), len(segments_block[n])), dtype=complex)
