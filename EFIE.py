@@ -43,7 +43,7 @@ def calc_field_pattern (phi, theta, current, R, delta_r, frequency) :
     perp_v1 = np.cross(v, aux_v) / np.linalg.norm(np.cross(v, aux_v))
     perp_v2 = np.cross(perp_v1, v) / np.linalg.norm(np.cross(perp_v1, v))
 
-    Radius, num_points = 1e2, 1e3
+    Radius, num_points = 1e2, 1000
     angles = np.linspace(0, 2 * np.pi, num_points)
 
     points = np.zeros((num_points, 3))

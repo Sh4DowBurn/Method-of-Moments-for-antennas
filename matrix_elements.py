@@ -244,30 +244,22 @@ def calculate_voltage(basis_functions, segments_block, source_segments, delta_r)
         element_num.append(len(segments_block[i]))
     element_num = np.array(element_num)
     
-    voltage_block = []
-    if basis_functions == 'pulse':
-        for m in range(len(segments_block)):
-            voltage_row = []
-            for i in range(len(segments_block[m])):
-                for k in range(len(source_segments)):
-                    if np.abs(np.linalg.norm(source_segments[k].position - segments_block[m][i].position)) <= 1e-8:
-                        v_m = source_segments[k].field
-                        voltage_row.append(v_m)
-                    else:
-                        voltage_row.append(0.0)
-            voltage_block.append(voltage_row)
+    if basis_functions == 'pulse' :
+        vol_shift, pos_shift = 1, 0
+    elif basis_functions == 'triangle' :
+        vol_shift, pos_shift = 0.5, -delta_r/2
     
-    elif basis_functions == 'triangle':
-        for m in range(len(segments_block)):
-            voltage_row = []
-            for i in range(len(segments_block[m])):
-                for k in range(len(source_segments)):
-                    if np.abs(np.linalg.norm(source_segments[k].position - segments_block[m][i].position) - delta_r/2) <= 1e-8:
-                        v_m = source_segments[k].field / 2
-                        voltage_row.append(v_m)
-                    else:
-                        voltage_row.append(0.0)
-            voltage_block.append(voltage_row)
+    voltage_block = []
+    for m in range(len(segments_block)):
+        voltage_row = []
+        for i in range(len(segments_block[m])):
+            for k in range(len(source_segments)):
+                if np.abs(np.linalg.norm(source_segments[k].position - segments_block[m][i].position) + pos_shift) <= 1e-8:
+                    v_m = source_segments[k].field * vol_shift
+                    voltage_row.append(v_m)
+                else:
+                    voltage_row.append(0.0)
+        voltage_block.append(voltage_row)
     
     voltage = np.zeros((sum(element_num)), dtype = float)
     cum_n = np.append(0, np.cumsum(element_num))

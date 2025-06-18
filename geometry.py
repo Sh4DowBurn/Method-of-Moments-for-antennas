@@ -22,40 +22,25 @@ def yagi_to_segments(antenna, basis_functions, delta_r):
     source_segments = []
     
     if basis_functions == 'pulse' :
-        
-        for m in range(0, len(element_num)):
-            segments_block_m = []
-            theta, phi = antenna.angle[m]
-            tau = np.array([np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)])
-            for i in range(element_num[m]):
-                position = antenna.position[m] + tau * delta_r * (i - element_num[m]/2 + 1/2)
-                radius = antenna.radius[m]
-                segments_block_m.append(segment(position=position, tau=tau, radius=radius))
-            segments_block_m = np.array(segments_block_m)
-            segments_block.append(segments_block_m)
-    
-        for m in range(len(antenna.source_position)):
-            x, y, z, field = antenna.source_position[m]
-            pos = np.array([x,y,z])
-            source_segments.append(source(position=pos, field=field))
-    
+        index_shift, pos_shift = 0, 0
     elif basis_functions == 'triangle' :
+        index_shift, pos_shift = -1, 1/2
     
-        for m in range(0, len(element_num)):
-            segments_block_m = []
-            theta, phi = antenna.angle[m]
-            tau = np.array([np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)])
-            for i in range(element_num[m]-1):
-                position = antenna.position[m] + tau * delta_r * (i - element_num[m]/2 + 1)
-                radius = antenna.radius[m]
-                segments_block_m.append(segment(position=position, tau=tau, radius=radius))
-            segments_block_m = np.array(segments_block_m)
-            segments_block.append(segments_block_m)
-        
-        for m in range(len(antenna.source_position)):
-            x, y, z, field = antenna.source_position[m]
-            pos = np.array([x,y,z])
-            source_segments.append(source(position=pos, field=field))
+    for m in range(0, len(element_num)):
+        segments_block_m = []
+        theta, phi = antenna.angle[m]
+        tau = np.array([np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)])
+        for i in range(element_num[m] + index_shift):
+            position = antenna.position[m] + tau * delta_r * (i - element_num[m]/2 + 1/2 + pos_shift)
+            radius = antenna.radius[m]
+            segments_block_m.append(segment(position=position, tau=tau, radius=radius))
+        segments_block_m = np.array(segments_block_m)
+        segments_block.append(segments_block_m)
+    
+    for m in range(len(antenna.source_position)):
+        x, y, z, field = antenna.source_position[m]
+        pos = np.array([x,y,z])
+        source_segments.append(source(position=pos, field=field))
         
     source_segments = np.array(source_segments, dtype=object)
     segments_block = np.array(segments_block, dtype=object) 
