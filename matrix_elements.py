@@ -201,7 +201,7 @@ def Zmn_double (basis_functions, m, n, i, j, segments_block, omega, delta_r):
     
     Z_yz = 1j/(4*np.pi * omega * eps0) * (tau_n[2] * tau_m[1] + tau_n[1] * tau_m[2]) * delta_r**2  * (integrate.dblquad(RederderYZGreen_function_double, t_min, t_max, lambda z1: t_min, lambda z2: t_max, args = (r_m, r_n, dr_m, dr_n, omega, basis_functions))[0] + 1j * integrate.dblquad(ImderderYZGreen_function_double, t_min, t_max, lambda z1: t_min, lambda z2: t_max, args = (r_m, r_n, dr_m, dr_n, omega, basis_functions))[0])
     
-    return Z_0 + Z_xx + Z_yy + Z_zz + Z_xy + Z_xz + Z_yz
+    return (Z_0 + Z_xx + Z_yy + Z_zz + Z_xy + Z_xz + Z_yz )
 
 def Zmn (basis_functions, m, n, i, j, segments_block, omega, delta_r):
     return Zmn_double(basis_functions=basis_functions, m=m, n=n, i=i, j=j, segments_block=segments_block, omega=omega, delta_r=delta_r)
