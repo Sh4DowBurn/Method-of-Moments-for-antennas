@@ -226,6 +226,18 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
                             impedance_mn[max(0, len(segments_block[m])-i-1) + k, max(0, i-len(segments_block[m])) + k] = impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))]
                 else :
                     impedance_mn = impedance_block[n][m].T
+            else:
+                if m < n:
+                    for i in range(len(segments_block[m])):
+                        for j in range(len(segments_block[n])):
+                            impedance_mn[i,j] = Zmn(basis_functions=basis_functions, m=m, n=n, i=i, j=j, segments_block=segments_block, omega=2*np.pi*frequency, delta_r=delta_r)
+                elif m > n:
+                    impedance_mn = impedance_block[n][m].T
+                elif m == n:
+                    for i in range (len(segments_block[m]) + len(segments_block[n])):
+                        impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))] = Zmn(basis_functions=basis_functions, m=m, n=n, i=max(0, len(segments_block[m])-i-1), j=max(0, i-len(segments_block[m])), segments_block=segments_block, omega=2*np.pi*frequency, delta_r=delta_r)
+                        for k in range (min( min(len(segments_block[m]), len(segments_block[n])), i+1, len(segments_block[m]) + len(segments_block[n]) - i)):
+                            impedance_mn[max(0, len(segments_block[m])-i-1) + k, max(0, i-len(segments_block[m])) + k] = impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))]
             impedance_row.append(impedance_mn)   
         impedance_block.append(impedance_row)
     

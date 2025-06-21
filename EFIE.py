@@ -48,7 +48,9 @@ def calc_current_amplitudes (structure_type, basis_functions, antenna, frequency
     # discretisation of parametric antenna by segments
     if structure_type == 'yagi-uda':
         segments_block, source_segments = gm.yagi_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-    
+    elif structure_type == 'tree':
+        segments_block, source_segments = gm.tree_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
+        
     # solving matrix equation to find current vector
     voltage = matrix_elements.calculate_voltage(basis_functions=basis_functions, segments_block=segments_block, source_segments=source_segments, delta_r=delta_r)
     impedance = matrix_elements.calculate_impedance(basis_functions=basis_functions, structure_type=structure_type, segments_block=segments_block, frequency=frequency, delta_r=delta_r)
@@ -84,7 +86,9 @@ def calc_field_pattern (phi, theta, basis_functions, structure_type, antenna, cu
 
     if structure_type == 'yagi-uda':
         segments_block, source_segments = gm.yagi_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-    
+    elif structure_type == 'tree':
+        segments_block, source_segments = gm.tree_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
+
     if basis_functions == 'pulse_optimized':
         E = []
         k = 2 * np.pi * frequency / light_speed

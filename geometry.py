@@ -47,3 +47,57 @@ def yagi_to_segments(antenna, basis_functions, delta_r):
     segments_block = np.array(segments_block, dtype=object) 
     
     return segments_block, source_segments
+
+def tree_to_segments(antenna, basis_functions, delta_r):
+    
+    if basis_functions == 'pulse' :
+        index_shift, pos_shift = 0, 0
+    elif basis_functions == 'triangle' :
+        index_shift, pos_shift = -1, 1/2
+        
+    its = antenna.its
+    phi = antenna.phi
+    radius = antenna.radius
+    dr = antenna.length
+    factor = antenna.f
+    field = antenna.field
+    
+    R_block = []
+    pos = np.array([0.0, 0.0, 0.0])
+    ang = np.array([0.0])
+    pos_phi = 0
+    for _ in range(its):
+        pos_new, ang_new = [], []
+        for p, a in zip(pos, ang):
+            ang1, ang2 = a + phi[pos_phi], a - phi[pos_phi+1]
+            pos_phi += 2
+
+            p1 = p + dr * np.array([np.cos(ang1), np.sin(ang1), 0.0])
+            p2 = p + dr * np.array([np.cos(ang2), np.sin(ang2), 0.0])
+
+            for start, end in [(p, p1), (p, p2)]:
+                length = np.linalg.norm(end - start)
+                n = int(length / delta_r)
+                if n % 2 == 0:
+                    n += 1
+                tau = (end - start) / length
+                R = []
+                for k in range(n - (1 if end is p2 else 0) + index_shift):
+                    pos_k = start + delta_r * k * tau + delta_r * tau * pos_shift
+                    R.append(segment(position=pos_k, tau=tau, radius=radius))
+                R = np.array(R)
+                R_block.append(R)
+
+            pos_new.extend([p1, p2])
+            ang_new.extend([ang1, ang2])
+
+        dr *= factor
+        pos = np.array(pos_new)
+        ang = np.array(ang_new)
+
+    R_block = np.array(R_block, dtype=object)
+    source_segments = []
+    sr = source(position=[0.0, 0.0, 0.0], field = field)
+    source_segments.append(sr)
+    source_segments = np.array(source_segments)
+    return R_block, source_segments
