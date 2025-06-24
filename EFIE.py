@@ -46,11 +46,7 @@ def exp_dp_imag (t_m, point, r_m, dr_m, omega, basis_functions):
 def calc_current_amplitudes (structure_type, basis_functions, antenna, frequency, delta_r):
 
     # discretisation of parametric antenna by segments
-    if structure_type == 'yagi-uda':
-        segments_block, source_segments = gm.yagi_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-    elif structure_type == 'tree':
-        segments_block, source_segments = gm.tree_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-        
+    segments_block, source_segments = gm.antenna_to_segments(structure_type=structure_type, antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
     # solving matrix equation to find current vector
     voltage = matrix_elements.calculate_voltage(basis_functions=basis_functions, segments_block=segments_block, source_segments=source_segments, delta_r=delta_r)
     impedance = matrix_elements.calculate_impedance(basis_functions=basis_functions, structure_type=structure_type, segments_block=segments_block, frequency=frequency, delta_r=delta_r)
