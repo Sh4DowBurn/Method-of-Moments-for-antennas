@@ -561,7 +561,6 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
     for i in range (len(cum_n)-1):
         for j in range (len(cum_n)-1):
             impedance[cum_n[i]:cum_n[i+1], cum_n[j]:cum_n[j+1]] = impedance_block[i][j]
-    print(np.abs(impedance))
     return impedance
 
 def calculate_voltage(basis_functions, segments_block, source_segments, delta_r):

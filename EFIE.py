@@ -80,11 +80,8 @@ def calc_field_pattern (phi, theta, basis_functions, structure_type, antenna, cu
     for i, angle in enumerate(angles):
         points[i] = Radius * (np.cos(angle) * perp_v1 + np.sin(angle) * perp_v2)
 
-    if structure_type == 'yagi-uda':
-        segments_block, source_segments = gm.yagi_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-    elif structure_type == 'tree':
-        segments_block, source_segments = gm.tree_to_segments(antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-
+    segments_block, source_segments = gm.antenna_to_segments(structure_type=structure_type, antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
+    
     if basis_functions == 'pulse_optimized':
         E = []
         k = 2 * np.pi * frequency / light_speed
