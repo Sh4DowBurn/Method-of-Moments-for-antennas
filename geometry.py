@@ -1,6 +1,8 @@
 
 import numpy as np
 
+c, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
+
 class segment:
     def __init__(self, position, tau, radius):
         self.position = position
@@ -131,4 +133,20 @@ def plot_antenna(structure_type, basis_functions, antenna, delta_r):
     plt.ylabel('Y position, m', size = 12)
     plt.grid(zorder = 0)
     plt.axis('equal')
+    
+def plot_distribution(I, R, frequency):
+    
+    wavelength = c / frequency
+    
+    fig, ax = plt.subplots()
+    sc = ax.scatter(R[:, 0] / wavelength, R[:, 1] / wavelength, c=np.abs(I), cmap='inferno', zorder = 5)
+    ax.set_xlabel('X position, wavelength', size = 12)
+    ax.set_ylabel('Y position, wavelength', size = 12)
+    ax.set_title('Current distribution', size = 13)
+    ax.grid(True, zorder = 0)
+    cbar = fig.colorbar(sc, ax=ax)
+    cbar.set_label('Current amplitudes')
+
+    plt.show()
+
     

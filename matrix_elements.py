@@ -542,14 +542,22 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
             impedance_block.append(impedance_row)
     
     elif structure_type == 'tree':
-        for m in range(len(segments_block)):
+        for m in tqdm(range(len(segments_block))):
             impedance_row = []
-            for n in tqdm(range(len(segments_block))):
+            for n in range(len(segments_block)):
                 impedance_mn = np.zeros((len(segments_block[m]), len(segments_block[n])), dtype=complex)
+                tau_m = segments_block[m][0].tau
+                tau_n = segments_block[n][0].tau
                 if m <= n :
-                    for i in range(len(segments_block[m])):
-                        for j in range(len(segments_block[n])):
-                            impedance_mn[i,j] = Zmn_single(structure_type,basis_functions,m,n,i,j,segments_block,omega,delta_r)
+                    if m == n or np.linalg.norm(np.cross(tau_m, tau_n)) <= 1e-25:
+                        for i in range (len(segments_block[m]) + len(segments_block[n])):
+                            impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))] = Zmn_double(structure_type=structure_type,basis_functions=basis_functions, m=m, n=n, i=max(0, len(segments_block[m])-i-1), j=max(0, i-len(segments_block[m])), segments_block=segments_block, omega=2*np.pi*frequency, delta_r=delta_r)
+                            for k in range (min( min(len(segments_block[m]), len(segments_block[n])), i+1, len(segments_block[m]) + len(segments_block[n]) - i)):
+                                impedance_mn[max(0, len(segments_block[m])-i-1) + k, max(0, i-len(segments_block[m])) + k] = impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))]
+                    else:
+                        for i in range(len(segments_block[m])):
+                            for j in range(len(segments_block[n])):
+                                impedance_mn[i,j] = Zmn_single(structure_type,basis_functions,m,n,i,j,segments_block,omega,delta_r)
                 else :
                     impedance_mn = impedance_block[n][m].T
                 impedance_row.append(impedance_mn)
