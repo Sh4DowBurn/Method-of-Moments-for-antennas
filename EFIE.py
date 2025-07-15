@@ -7,8 +7,6 @@ from tqdm import tqdm
 import geometry as gm
 import matrix_elements as matrix_elements
 
-# define constants
-
 light_speed, mu0, eps0 = 299792458., 4*np.pi*1e-7, 8.854e-12
 c = light_speed
 
@@ -42,17 +40,14 @@ def exp_dp_imag (t_m, point, r_m, dr_m, omega, basis_functions):
     f_m = weight_func(basis_functions=basis_functions, t_m=t_m, r_m=r_m, dr_m=dr_m)
     return f_m * np.sin(-k * rmn) / rmn
 
-# function for calculating current amplitudes
 def calc_current_amplitudes (structure_type, basis_functions, antenna, frequency, delta_r):
 
-    # discretisation of parametric antenna by segments
     segments_block, source_segments = gm.antenna_to_segments(structure_type=structure_type, antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
-    # solving matrix equation to find current vector
+    
     voltage = matrix_elements.calculate_voltage(basis_functions=basis_functions, segments_block=segments_block, source_segments=source_segments, delta_r=delta_r)
     impedance = matrix_elements.calculate_impedance(basis_functions=basis_functions, structure_type=structure_type, segments_block=segments_block, frequency=frequency, delta_r=delta_r)
     current = np.linalg.solve(impedance, voltage)
 
-    # define an array of position and amplitudes of current
     R, curr = [], []
     curr_pos = 0
     for m in range(len(segments_block)):
@@ -62,7 +57,7 @@ def calc_current_amplitudes (structure_type, basis_functions, antenna, frequency
             curr_pos += 1
     current, R = np.array(curr), np.array(R)
     
-    return current, R
+    return current, R, impedance, voltage, segments_block, source_segments
     
 def calc_field_pattern (phi, theta, basis_functions, structure_type, antenna, current, R, delta_r, frequency) :
 
