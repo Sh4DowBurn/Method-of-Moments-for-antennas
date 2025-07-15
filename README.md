@@ -32,10 +32,10 @@ $$
 E_{\mathrm{tan}}(\mathbf{r}) + E_{\mathrm{tan}}^{\mathrm{inc}}(\mathbf{r}) = 0, \quad \text{где} \quad E_{\mathrm{tan}}^{\mathrm{inc}} \text{ — падающее поле (создаваемое источником антенны)}
 $$
 
-Скалярно домножим на направляющий вектор $\bm{\tau}(\mathbf{r})$ и заменим излучаемое поле на падающее:
+Скалярно домножим на направляющий вектор $\mathbf{\tau}(\mathbf{r})$ и заменим излучаемое поле на падающее:
 
 $$
-E_{\mathrm{tan}}^{\mathrm{inc}}(\mathbf{r}) = \frac{j \omega \mu}{4 \pi} \bm{\tau}(\mathbf{r}) \cdot \int_C \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] \mathbf{I}(\mathbf{r}') \frac{e^{-jk|\mathbf{r} - \mathbf{r}'|}}{|\mathbf{r} - \mathbf{r}'|} \mathrm{d} r'
+E_{\mathrm{tan}}^{\mathrm{inc}}(\mathbf{r}) = \frac{j \omega \mu}{4 \pi} \mathbf{\tau}(\mathbf{r}) \cdot \int_C \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] \mathbf{I}(\mathbf{r}') \frac{e^{-jk|\mathbf{r} - \mathbf{r}'|}}{|\mathbf{r} - \mathbf{r}'|} \mathrm{d} r'
 $$
 
 ## Дискретизация задачи, МоМ и метод Галеркина
@@ -43,19 +43,19 @@ $$
 Дискретизируем задачу, разбив антенну на цилиндрические сегменты — элементы МоМа. Распределение тока представим как линейную комбинацию базисных функций:
 
 $$
-\mathbf{I}(\mathbf{r}') = \sum_{n=0}^N I_n f_n \bm{\tau}(\mathbf{r}')
+\mathbf{I}(\mathbf{r}') = \sum_{n=0}^N I_n f_n \mathbf{\tau}(\mathbf{r}')
 $$
 
 Тогда исходное уравнение примет вид:
 
 $$
-E_{\mathrm{tan}}^{\mathrm{inc}}(\mathbf{r}) = \frac{j \omega \mu}{4 \pi} \bm{\tau}(\mathbf{r}) \cdot \sum_{n=0}^N I_n \int_{f_n} f_n \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] \bm{\tau}(\mathbf{r}') \frac{e^{-jk|\mathbf{r} - \mathbf{r}'|}}{|\mathbf{r} - \mathbf{r}'|} \mathrm{d} r'
+E_{\mathrm{tan}}^{\mathrm{inc}}(\mathbf{r}) = \frac{j \omega \mu}{4 \pi} \mathbf{\tau}(\mathbf{r}) \cdot \sum_{n=0}^N I_n \int_{f_n} f_n \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] \mathbf{\tau}(\mathbf{r}') \frac{e^{-jk|\mathbf{r} - \mathbf{r}'|}}{|\mathbf{r} - \mathbf{r}'|} \mathrm{d} r'
 $$
 
 Введем набор весовых функций $f_m$, аналогичный базисным, и запишем их свертку с левой и правой частями уравнения:
 
 $$
-\int_{f_m} E^{\mathrm{inc}}_{\mathrm{tan}} \mathrm{d} r = \frac{j \omega \mu}{4 \pi} \sum_{n=0}^N I_n \int_{f_m} \int_{f_n} f_m f_n \bm{\tau}(\mathbf{r}) \cdot \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] \bm{\tau}(\mathbf{r}') \frac{e^{-jk|\mathbf{r} - \mathbf{r}'|}}{|\mathbf{r} - \mathbf{r}'|} \mathrm{d} r' \mathrm{d} r
+\int_{f_m} E^{\mathrm{inc}}_{\mathrm{tan}} \mathrm{d} r = \frac{j \omega \mu}{4 \pi} \sum_{n=0}^N I_n \int_{f_m} \int_{f_n} f_m f_n \mathbf{\tau}(\mathbf{r}) \cdot \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] \mathbf{\tau}(\mathbf{r}') \frac{e^{-jk|\mathbf{r} - \mathbf{r}'|}}{|\mathbf{r} - \mathbf{r}'|} \mathrm{d} r' \mathrm{d} r
 $$
 
 Для удобства введем обозначения:
@@ -64,8 +64,8 @@ $$
 \begin{cases}
 \mathbf{r} = \mathbf{r}_m \\
 \mathbf{r}' = \mathbf{r}_n \\
-\bm{\tau}(\mathbf{r}) = \bm{\tau}_m \\
-\bm{\tau}(\mathbf{r}') = \bm{\tau}_n \\
+\mathbf{\tau}(\mathbf{r}) = \mathbf{\tau}_m \\
+\mathbf{\tau}(\mathbf{r}') = \mathbf{\tau}_n \\
 |\mathbf{r}_m - \mathbf{r}_n| = R \\
 G = \frac{e^{-jkR}}{R}
 \end{cases}
@@ -74,7 +74,7 @@ $$
 В такой нотации уравнение будет выглядеть следующим образом:
 
 $$
-\int_{f_m} E^{\mathrm{inc}}_{\mathrm{tan}} \mathrm{d} r_m = \frac{j \omega \mu}{4\pi} \sum_{n=0}^N I_n \int_{f_m} \int_{f_n} f_m f_n \bm{\tau}_m \cdot \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] G \bm{\tau}_n \mathrm{d} r_n \mathrm{d} r_m
+\int_{f_m} E^{\mathrm{inc}}_{\mathrm{tan}} \mathrm{d} r_m = \frac{j \omega \mu}{4\pi} \sum_{n=0}^N I_n \int_{f_m} \int_{f_n} f_m f_n \mathbf{\tau}_m \cdot \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] G \mathbf{\tau}_n \mathrm{d} r_n \mathrm{d} r_m
 $$
 
 ## Построение матричного уравнения
@@ -112,7 +112,7 @@ $$
 А импеданс:
 
 $$
-Z_{ijmn} = \frac{j \omega \mu}{4 \pi} \int_{f_m} \int_{f_n} f_m f_n \bm{\tau}_m \cdot \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] G \bm{\tau}_n \mathrm{d} r_n \mathrm{d} r_m
+Z_{ijmn} = \frac{j \omega \mu}{4 \pi} \int_{f_m} \int_{f_n} f_m f_n \mathbf{\tau}_m \cdot \left[ 1 + \frac{1}{k^2} \nabla \nabla \cdot \right] G \mathbf{\tau}_n \mathrm{d} r_n \mathrm{d} r_m
 $$
 
 Решением слау являются амплитуды базисных функций, из которых легко находится распределение токов и далее рассчитывается излучение антенны.
@@ -133,15 +133,15 @@ $$
 
 $$
 \begin{cases}
-\bm{\tau}_m = \sin \phi_m \cos \theta_m \bm{e}_x + \sin \phi_m \sin \theta_m \bm{e}_y + \cos \phi_m \bm{e}_z \\
-\bm{\tau}_n = \sin \phi_n \cos \theta_n \bm{e}_x + \sin \phi_n \sin \theta_n \bm{e}_y + \cos \phi_n \bm{e}_z
+\mathbf{\tau}_m = \sin \phi_m \cos \theta_m \mathbf{e}_x + \sin \phi_m \sin \theta_m \mathbf{e}_y + \cos \phi_m \mathbf{e}_z \\
+\mathbf{\tau}_n = \sin \phi_n \cos \theta_n \mathbf{e}_x + \sin \phi_n \sin \theta_n \mathbf{e}_y + \cos \phi_n \mathbf{e}_z
 \end{cases}
 $$
 
 Теперь попробуем преобразовать подынтегральное выражение:
 
 $$
-\left[1 + \frac{1}{k^2} \nabla \nabla \cdot \right] G \bm{\tau}_n = G \bm{\tau}_n + \frac{1}{k^2} \nabla \left( \tau_{nx} \frac{\partial G}{\partial x} + \tau_{ny} \frac{\partial G}{\partial y} + \tau_{nz} \frac{\partial G}{\partial z} \right) = G\bm{\tau_n} + \dfrac{1}{k^2}\begin{pmatrix}
+\left[1 + \frac{1}{k^2} \nabla \nabla \cdot \right] G \mathbf{\tau}_n = G \mathbf{\tau}_n + \frac{1}{k^2} \nabla \left( \tau_{nx} \frac{\partial G}{\partial x} + \tau_{ny} \frac{\partial G}{\partial y} + \tau_{nz} \frac{\partial G}{\partial z} \right) = G\mathbf{\tau_n} + \dfrac{1}{k^2}\begin{pmatrix}
 \tau_{nx} \dfrac{\partial^2 G}{\partial x^2} + \tau_{ny} \dfrac{\partial^2 G}{\partial x \partial y} + \tau_{nz} \dfrac{\partial^2 G}{\partial x \partial z} \\
  \tau_{ny} \dfrac{\partial^2 G}{\partial y^2} + \tau_{nx} \dfrac{\partial^2 G}{\partial y \partial x} + \tau_{nz} \dfrac{\partial^2 G}{\partial y \partial z} \\
 \tau_{nz} \dfrac{\partial^2 G}{\partial z^2} + \tau_{nx} \dfrac{\partial^2 G}{\partial z \partial x} + \tau_{ny} \dfrac{\partial^2 G}{\partial z \partial y}
@@ -149,15 +149,15 @@ $$
 $$
 
 
-Далее скалярно умножим полученные вектора на $\bm{\tau_m}$:
+Далее скалярно умножим полученные вектора на $\mathbf{\tau_m}$:
 $$
-G\bm{\tau_m}\cdot\bm{\tau_n} + \dfrac{1}{k^2}\tau_{mx}\tau_{nx}\dfrac{\partial^2 G}{\partial x^2} + \dfrac{1}{k^2}\tau_{my}\tau_{ny}\dfrac{\partial^2 G}{\partial y^2} + \dfrac{1}{k^2}\tau_{mz}\tau_{nz}\dfrac{\partial^2 G}{\partial z^2} + \\ + \dfrac{1}{k^2}\left( \tau_{mx}\tau_{ny} + \tau_{my}\tau_{nx}\right) \dfrac{\partial^2 G}{\partial x \partial y} + \dfrac{1}{k^2}\left( \tau_{mx}\tau_{nz} + \tau_{mz}\tau_{nx}\right) \dfrac{\partial^2 G}{\partial x  \partial z} + \dfrac{1}{k^2}\left( \tau_{my}\tau_{nz} + \tau_{mz}\tau_{ny}\right) \dfrac{\partial^2 G}{\partial y \partial z}
+G\mathbf{\tau_m}\cdot\mathbf{\tau_n} + \dfrac{1}{k^2}\tau_{mx}\tau_{nx}\dfrac{\partial^2 G}{\partial x^2} + \dfrac{1}{k^2}\tau_{my}\tau_{ny}\dfrac{\partial^2 G}{\partial y^2} + \dfrac{1}{k^2}\tau_{mz}\tau_{nz}\dfrac{\partial^2 G}{\partial z^2} + \\ + \dfrac{1}{k^2}\left( \tau_{mx}\tau_{ny} + \tau_{my}\tau_{nx}\right) \dfrac{\partial^2 G}{\partial x \partial y} + \dfrac{1}{k^2}\left( \tau_{mx}\tau_{nz} + \tau_{mz}\tau_{nx}\right) \dfrac{\partial^2 G}{\partial x  \partial z} + \dfrac{1}{k^2}\left( \tau_{my}\tau_{nz} + \tau_{mz}\tau_{ny}\right) \dfrac{\partial^2 G}{\partial y \partial z}
 $$
 Сдеаем несколько замен:
 
 $$
 \begin{cases}
-c_0 = \bm{\tau}_m \cdot \bm{\tau}_n \\
+c_0 = \mathbf{\tau}_m \cdot \mathbf{\tau}_n \\
 c_{xx} = \frac{1}{k^2} \tau_{mx} \tau_{nx} \\
 c_{yy} = \frac{1}{k^2} \tau_{my} \tau_{ny} \\
 c_{zz} = \frac{1}{k^2} \tau_{mz} \tau_{nz} \\
