@@ -84,8 +84,8 @@ $$
 $$
 \begin{pmatrix}
 \mathbf{Z}_{00} & \mathbf{Z}_{01} & \cdots & \mathbf{Z}_{0M} \\
-\mathbf{Z}_{10} & \ddots & \ddots & \vdots \\
-\vdots & \ddots & \ddots & \vdots \\
+\mathbf{Z}_{10} & \ddots          & \ddots & \vdots \\
+\vdots          & \ddots          & \ddots & \vdots \\
 \mathbf{Z}_{M0} & \mathbf{Z}_{M1} & \cdots & \mathbf{Z}_{MM}
 \end{pmatrix}
 \begin{pmatrix}
