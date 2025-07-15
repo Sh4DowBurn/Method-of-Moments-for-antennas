@@ -344,3 +344,6 @@ $$
 $$
 E\left(\mathbf{r_m}\right)  = - \sum_{n=0}^N  \dfrac{j\omega\mu I_n \Delta r}{2 \pi R}e^{-jkR}
 $$
+
+# Программная реализация 
+See you soon
