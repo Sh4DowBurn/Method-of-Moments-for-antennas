@@ -303,7 +303,11 @@ $$
 $$
 Так как $R \gg \dfrac{2D^2}{\lambda}$, можно считать фронт нашей сферической волны плоской:
 $$
--jk|\mathbf{r_m} - \mathbf{r'}| = -jk \left(R - \left( \mathbf{r'} - \mathbf{r_n}\right) \cdot \mathbf{\hat k}\right) = -jkR-j \mathbf{k}\cdot\mathbf{r_n} + j\mathbf{k}\cdot\mathbf{r'}
+|\mathbf{r_m} - \mathbf{r'}| = |\mathbf{r_m}-\mathbf{r_n}-\left(\mathbf{r'}-\mathbf{r_n}\right)| = |\mathbf{R} - \left(\mathbf{r'}-\mathbf{r_n} \right)| = \sqrt{R^2+(\mathbf{r'}-\mathbf{r_n})^2-2\mathbf{R}\cdot\left(\mathbf{r'}-\mathbf{r_n}\right)}
+$$
+Раскладывая в ряд тейлора по малому аргументу получим:
+$$
+R\sqrt{1-\dfrac{2\mathbf{R}\cdot\left(\mathbf{r'}-\mathbf{r_n}\right)}{R^2}} \approx R + \dfrac{\mathbf{R}}{R}\cdot\mathbf{r_n} -  \dfrac{\mathbf{R}}{R}\cdot\mathbf{r'}, \ \text{здесь} \ \dfrac{\mathbf{R}}{R} = \mathbf{\hat k}
 $$
 Теперь вынесем получившийся фазовый множитель:
 $$

@@ -111,6 +111,77 @@ def antenna_to_segments(structure_type, antenna, basis_functions, delta_r):
         source_segments.append(sr)
         source_segments = np.array(source_segments)
         
+    elif structure_type == 'circle':
+        element_num = np.round(2 * np.pi * antenna.R / delta_r).astype(int)
+        for i in range(len(element_num)):
+            if element_num[i] % 2 == 0:
+                element_num[i] += 1
+
+        segments_block = []
+        source_segments = []
+        
+        if basis_functions == 'pulse' :
+            index_shift, pos_shift = 0, 0
+        elif basis_functions == 'triangle' :
+            index_shift, pos_shift = -1, 1/2
+            
+        for m in range(len(element_num)):
+            segments_block_m = []
+            R_m = antenna.R[m]
+            radius_m = antenna.radius[m]
+            center_m = antenna.center[m]
+            num = element_num[m]
+            
+            phi = np.linspace(0, 2 * np.pi, num, endpoint=False)
+            for i in range(num):
+                tau = np.array([np.cos(phi[i]), np.sin(phi[i]), 0.0])
+                pos = center_m + R_m * tau + pos_shift * delta_r * np.array([0.0,-1,0.0])
+                segments_block_m.append(segment(position=pos, tau=tau, radius=radius_m))
+            segments_block.append(np.array(segments_block_m))
+    
+        for m in range(len(antenna.source_position)):
+            x, y, z, field = antenna.source_position[m]
+            pos = np.array([x,y,z])
+            source_segments.append(source(position=pos, field=field))    
+        
+        segments_block = np.array(segments_block, dtype=object)
+        source_segments = np.array(source_segments, dtype=object)
+        
+    elif structure_type == 'mixed':
+        
+        source_segments = []
+        segments_block = []
+        
+        seg_yagi_block, source_yagi_block = [], []
+        if len(antenna.yagis) != 0:
+            yagi = antenna.yagis[0]
+            seg_yagi_block, source_yagi_block = antenna_to_segments('yagi-uda', yagi, basis_functions, delta_r)
+        seg_tree_block, source_tree_block = [], []
+        if len(antenna.trees) != 0:
+            tree = antenna.trees[0]
+            seg_tree_block, source_tree_block = antenna_to_segments('tree', tree, basis_functions, delta_r)
+        seg_circle_block, source_circle_block = [], []
+        if len(antenna.circles) != 0:
+            circle = antenna.circles[0]
+            seg_circle_block, source_circle_block = antenna_to_segments('circle', circle, basis_functions, delta_r)
+        
+        for i in range(len(seg_yagi_block)):
+            segments_block.append(seg_yagi_block[i])
+        for i in range(len(seg_tree_block)):
+            segments_block.append(seg_tree_block[i])
+        for i in range(len(seg_circle_block)):
+            segments_block.append(seg_circle_block[i])
+        
+        for i in range(len(source_yagi_block)):
+            source_segments.append(source_yagi_block[i])
+        for i in range(len(source_tree_block)):
+            source_segments.append(source_tree_block[i])
+        for i in range(len(source_circle_block)):
+            source_segments.append(source_circle_block[i])
+            
+        segments_block = np.array(segments_block, dtype=object)
+        source_segments = np.array(source_segments, dtype=object)
+        
     return segments_block, source_segments
 
 import matplotlib.pyplot as plt

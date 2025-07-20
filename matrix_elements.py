@@ -530,7 +530,11 @@ def Zmn (structure_type, basis_functions, m, n, i, j, segments_block, omega, del
         r_n = r_n + a_n * np.array([0,0,1])
     elif structure_type == 'tree':
         r_n = r_n + a_n * np.array([0,0,1])
-
+    elif structure_type == 'circle':
+        r_n = r_n + a_n * np.array([0,0,1])
+    elif structure_type == 'mixed':
+        r_n = r_n + a_n * np.array([0,0,1])
+        
     dr_m = delta_r * tau_m
     dr_n = delta_r * tau_n
     
@@ -563,7 +567,7 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
                 impedance_row.append(impedance_mn)   
             impedance_block.append(impedance_row)
     
-    elif structure_type == 'tree':
+    elif structure_type == 'tree' or structure_type == 'mixed' or structure_type == 'circle':
         for m in tqdm(range(len(segments_block))):
             impedance_row = []
             for n in range(len(segments_block)):
@@ -584,7 +588,7 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
                     impedance_mn = impedance_block[n][m].T
                 impedance_row.append(impedance_mn)
             impedance_block.append(impedance_row)
-    
+                   
     num_elements = sum(element_num)
     impedance = np.zeros((num_elements, num_elements), dtype = complex)
     cum_n = np.append(0, np.cumsum(element_num))

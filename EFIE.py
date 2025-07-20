@@ -62,7 +62,7 @@ def calc_current_amplitudes (structure_type, basis_functions, antenna, frequency
 def calc_field_pattern (phi, theta, distance, basis_functions, structure_type, antenna, current, R, delta_r, frequency) :
 
     omega = 2 * np.pi * frequency
-    
+    k = omega / light_speed
     v = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
     aux_v = np.array([1, 0, 0])
     perp_v1 = np.cross(v, aux_v) / np.linalg.norm(np.cross(v, aux_v))
@@ -77,33 +77,36 @@ def calc_field_pattern (phi, theta, distance, basis_functions, structure_type, a
 
     segments_block, source_segments = gm.antenna_to_segments(structure_type=structure_type, antenna=antenna, basis_functions=basis_functions, delta_r=delta_r)
     
-    if basis_functions == 'pulse_optimized':
-        E = []
-        k = 2 * np.pi * frequency / light_speed
-        for point in points:
-            E_i = 0
-            for j in range(len(R)):
-                rmn = np.linalg.norm(point - R[j])
-                E_i += current[j] * np.exp(-1j * k * rmn) / rmn
-            E_i = -1j * frequency * mu0 * delta_r * np.abs(E_i) / 2
-            E.append(E_i)
-        E_total = np.abs(E)
-        return E_total, angles
-        
     E = []
     for point in points:
         curr_pos = 0
-        if basis_functions == 'triangle':
-            t_min, t_max = -1/2, 3/2
-        elif basis_functions == 'pulse':
-            t_min, t_max = 0, 1
         E_i = 0
-        for m in range(len(segments_block)):
-            for i in range(len(segments_block[m])):
-                a_m, tau_m, r_m = segments_block[m][i].radius, segments_block[m][i].tau, segments_block[m][i].position
-                dr_m = delta_r * tau_m
-                E_i += -1j * omega * mu0 * delta_r / (4 * np.pi) * current[curr_pos] * (integrate.quad(exp_dp_real, t_min, t_max, args=(point, r_m, dr_m, omega, basis_functions))[0] + 1j * integrate.quad(exp_dp_imag, t_min, t_max, args=(point, r_m, dr_m, omega, basis_functions))[0])
-                curr_pos += 1
+        if basis_functions == 'pulse':
+            for m in range(len(segments_block)):
+                for i in range(len(segments_block[m])):
+                    a_n, tau_n, r_n = segments_block[m][i].radius, segments_block[m][i].tau, segments_block[m][i].position
+                    dr_n = delta_r * tau_n
+                    rmn = np.linalg.norm(point - r_n)
+                    k_vec = (point - r_n) / rmn
+                    k_p = k * np.dot(k_vec, dr_n)
+                    if k_p == 0:
+                        E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (4 * np.pi * rmn) * np.exp(-1j * k *rmn)
+                    else:
+                        E_i += - omega * mu0 * current[curr_pos] * delta_r / (4*np.pi*rmn*k_p) * np.exp(-1j*k*rmn) * np.exp(-1j*k_p/2) * (np.exp(1j*k_p) - 1)
+                    curr_pos += 1
+        elif basis_functions == 'triangle':
+            for m in range(len(segments_block)):
+                for i in range(len(segments_block[m])):
+                    a_n, tau_n, r_n = segments_block[m][i].radius, segments_block[m][i].tau, segments_block[m][i].position
+                    dr_n = delta_r * tau_n
+                    rmn = np.linalg.norm(point - r_n)
+                    k_vec = (point - r_n) / rmn
+                    k_p = k * np.dot(k_vec, dr_n)
+                    if k_p == 0:
+                        E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (2 * np.pi * rmn) * np.exp(-1j * k *rmn)
+                    else:
+                        E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (4*np.pi*rmn*k_p**2) * np.exp(-1j*k*rmn) * np.exp(-1j*k_p) * (2*np.exp(1j*k_p) - np.exp(2j*k_p) - 1)
+                    curr_pos += 1
         E.append(E_i)
     E_total = np.abs(E)
     
