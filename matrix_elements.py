@@ -510,6 +510,65 @@ def impedance_imag (t_m, t_n, r_m, r_n, dr_m, dr_n, omega, basis_functions):
     
     return f_n * f_m * (-polypart1 * np.sin(k * rmn) + polypart2 * np.cos(k * rmn)) / rmn**3
 
+def impedance_real_approx(t_m, r_m, r_n, dr_m, dr_n, omega, basis_functions):
+    k = omega / c
+    t_n = 1/2
+    tau_n = dr_n / np.linalg.norm(dr_n)
+    tau_m = dr_m / np.linalg.norm(dr_m)
+    
+    c_0 = (np.dot(tau_m, tau_n))
+    c_x = (1/k**2 * tau_n[0] * tau_m[0])
+    c_y = (1/k**2 * tau_n[1] * tau_m[1])
+    c_z = (1/k**2 * tau_n[2] * tau_m[2])
+    c_xy = (1/k**2 * (tau_m[0]*tau_n[1] + tau_m[1]*tau_n[0]))
+    c_xz = (1/k**2 * (tau_m[0]*tau_n[2] + tau_m[2]*tau_n[0]))
+    c_yz = (1/k**2 * (tau_m[1]*tau_n[2] + tau_m[2]*tau_n[1]))
+
+    C = c_x + c_y + c_z
+
+    rmn =  (np.linalg.norm(r_m - r_n + dr_m*(t_m-1/2) - dr_n*(t_n-1/2)))
+    dx = (r_m[0] - r_n[0] + dr_m[0]*(t_m-1/2) - dr_n[0]*(t_n-1/2))
+    dy = (r_m[1] - r_n[1] + dr_m[1]*(t_m-1/2) - dr_n[1]*(t_n-1/2))
+    dz = (r_m[2] - r_n[2] + dr_m[2]*(t_m-1/2) - dr_n[2]*(t_n-1/2))
+    L = c_x * dx**2 + c_y * dy**2 + c_z * dz**2 + c_xy * dx * dy + c_xz * dx * dz + c_yz * dy * dz
+    
+    polypart1 = c_0 * rmn**2 - C + L * (3 - k**2 * rmn**2) / rmn**2
+    polypart2 = k * (3 * L / rmn - rmn * C)
+    
+    f_n = basis_func(basis_functions=basis_functions, t_n=t_n, r_n=r_n, dr_n=dr_n)
+    f_m = weight_func(basis_functions=basis_functions, t_m=t_m, r_m=r_m, dr_m=dr_m)
+    
+    return f_n * f_m * (polypart1 * np.cos(k * rmn) + polypart2 * np.sin(k * rmn)) / rmn**3
+def impedance_imag_approx (t_m, r_m, r_n, dr_m, dr_n, omega, basis_functions):
+    k = omega / c
+    t_n = 1/2
+    tau_n = dr_n / np.linalg.norm(dr_n)
+    tau_m = dr_m / np.linalg.norm(dr_m)
+    
+    c_0 = (np.dot(tau_m, tau_n))
+    c_x = (1/k**2 * tau_n[0] * tau_m[0])
+    c_y = (1/k**2 * tau_n[1] * tau_m[1])
+    c_z = (1/k**2 * tau_n[2] * tau_m[2])
+    c_xy = (1/k**2 * (tau_m[0]*tau_n[1] + tau_m[1]*tau_n[0]))
+    c_xz = (1/k**2 * (tau_m[0]*tau_n[2] + tau_m[2]*tau_n[0]))
+    c_yz = (1/k**2 * (tau_m[1]*tau_n[2] + tau_m[2]*tau_n[1]))
+
+    C = c_x + c_y + c_z
+
+    rmn =  (np.linalg.norm(r_m - r_n + dr_m*(t_m-1/2) - dr_n*(t_n-1/2)))
+    dx = (r_m[0] - r_n[0] + dr_m[0]*(t_m-1/2) - dr_n[0]*(t_n-1/2))
+    dy = (r_m[1] - r_n[1] + dr_m[1]*(t_m-1/2) - dr_n[1]*(t_n-1/2))
+    dz = (r_m[2] - r_n[2] + dr_m[2]*(t_m-1/2) - dr_n[2]*(t_n-1/2))
+    L = c_x * dx**2 + c_y * dy**2 + c_z * dz**2 + c_xy * dx * dy + c_xz * dx * dz + c_yz * dy * dz
+    
+    polypart1 = c_0 * rmn**2 - C + L * (3 - k**2 * rmn**2) / rmn**2
+    polypart2 = k * (3 * L / rmn - rmn * C)
+    
+    f_n = basis_func(basis_functions=basis_functions, t_n=t_n, r_n=r_n, dr_n=dr_n)
+    f_m = weight_func(basis_functions=basis_functions, t_m=t_m, r_m=r_m, dr_m=dr_m)
+    
+    return f_n * f_m * (-polypart1 * np.sin(k * rmn) + polypart2 * np.cos(k * rmn)) / rmn**3
+
 def Zmn (structure_type, basis_functions, m, n, i, j, segments_block, omega, delta_r):
 
     if basis_functions == 'pulse' :
@@ -534,11 +593,16 @@ def Zmn (structure_type, basis_functions, m, n, i, j, segments_block, omega, del
         r_n = r_n + a_n * np.array([0,0,1])
     elif structure_type == 'mixed':
         r_n = r_n + a_n * np.array([0,0,1])
+    elif structure_type == 'symetric_tree':
+        r_n = r_n + a_n * np.array([0,0,1])
         
     dr_m = delta_r * tau_m
     dr_n = delta_r * tau_n
     
-    return 1j*omega*mu0 / (4*np.pi) * delta_r **2 * (integrate.dblquad(impedance_real, t_min, t_max, lambda z1: t_min, lambda z2: t_max, args=(r_m, r_n, dr_m, dr_n, omega, basis_functions))[0] + 1j * integrate.dblquad(impedance_imag, t_min, t_max, lambda z1: t_min, lambda z2: t_max, args=(r_m, r_n, dr_m, dr_n, omega, basis_functions))[0])
+    if np.linalg.norm(r_m - r_n) >= c/omega:
+        return 1j*omega*mu0 / (4*np.pi) * delta_r **2 * (integrate.quad(impedance_real_approx, t_min, t_max, args=(r_m, r_n, dr_m, dr_n, omega, basis_functions))[0] + 1j * integrate.quad(impedance_imag_approx, t_min, t_max, args=(r_m, r_n, dr_m, dr_n, omega, basis_functions))[0])
+    else:
+        return 1j*omega*mu0 / (4*np.pi) * delta_r **2 * (integrate.dblquad(impedance_real, t_min, t_max, lambda z1: t_min, lambda z2: t_max, args=(r_m, r_n, dr_m, dr_n, omega, basis_functions))[0] + 1j * integrate.dblquad(impedance_imag, t_min, t_max, lambda z1: t_min, lambda z2: t_max, args=(r_m, r_n, dr_m, dr_n, omega, basis_functions))[0])
 
 
 def calculate_impedance (basis_functions, structure_type, segments_block, frequency, delta_r):
@@ -588,7 +652,41 @@ def calculate_impedance (basis_functions, structure_type, segments_block, freque
                     impedance_mn = impedance_block[n][m].T
                 impedance_row.append(impedance_mn)
             impedance_block.append(impedance_row)
-                   
+    elif structure_type == 'symetric_tree':
+        calced_Z = []
+        for m in tqdm(range(len(segments_block))):
+            impedance_row = []
+            for n in range(len(segments_block)):
+                impedance_mn = np.zeros((len(segments_block[m]), len(segments_block[n])), dtype=complex)
+                tau_m = segments_block[m][0].tau
+                tau_n = segments_block[n][0].tau
+                pos_m = segments_block[m][0].position
+                pos_n = segments_block[n][0].position
+                dp_mn = np.linalg.norm(pos_m - pos_n)
+                dt_mn = np.dot(tau_m, tau_n) / np.linalg.norm(tau_m) / np.linalg.norm(tau_n)
+                flag = 0
+                for k in range(len(calced_Z)):
+                    if calced_Z[k][0] == dp_mn and calced_Z[k][1] == dt_mn:
+                        impedance_mn = calced_Z[k][2]
+                        flag = 1
+                if flag == 0:
+                    if m <= n :
+                        if m == n:
+                            for i in range (len(segments_block[m]) + len(segments_block[n])):
+                                impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))] = Zmn(structure_type=structure_type,basis_functions=basis_functions, m=m, n=n, i=max(0, len(segments_block[m])-i-1), j=max(0, i-len(segments_block[m])), segments_block=segments_block, omega=2*np.pi*frequency, delta_r=delta_r)
+                                for k in range (min( min(len(segments_block[m]), len(segments_block[n])), i+1, len(segments_block[m]) + len(segments_block[n]) - i)):
+                                    impedance_mn[max(0, len(segments_block[m])-i-1) + k, max(0, i-len(segments_block[m])) + k] = impedance_mn[max(0, len(segments_block[m])-i-1), max(0, i-len(segments_block[m]))]
+                        else:
+                            for i in range(len(segments_block[m])):
+                                for j in range(len(segments_block[n])):
+                                    impedance_mn[i,j] = Zmn(structure_type,basis_functions,m,n,i,j,segments_block,omega,delta_r)
+                    else :
+                        impedance_mn = impedance_block[n][m].T
+                if len(calced_Z) == 0 or flag == 0:
+                    calced_Z.append([dp_mn, dt_mn, impedance_mn])
+                impedance_row.append(impedance_mn)
+            impedance_block.append(impedance_row)
+            
     num_elements = sum(element_num)
     impedance = np.zeros((num_elements, num_elements), dtype = complex)
     cum_n = np.append(0, np.cumsum(element_num))
