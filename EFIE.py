@@ -89,10 +89,11 @@ def calc_field_pattern (phi, theta, distance, basis_functions, structure_type, a
                     rmn = np.linalg.norm(point - r_n)
                     k_vec = (point - r_n) / rmn
                     k_p = k * np.dot(k_vec, dr_n)
-                    if k_p == 0:
-                        E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (4 * np.pi * rmn) * np.exp(-1j * k *rmn)
-                    else:
-                        E_i += - omega * mu0 * current[curr_pos] * delta_r / (4*np.pi*rmn*k_p) * np.exp(-1j*k*rmn) * np.exp(-1j*k_p/2) * (np.exp(1j*k_p) - 1)
+                    #if k_p == 0:
+                    #    E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (4 * np.pi * rmn) * np.exp(-1j * k *rmn)
+                    #else:
+                    #    E_i += - omega * mu0 * current[curr_pos] * delta_r / (4*np.pi*rmn*k_p) * np.exp(-1j*k*rmn) * np.exp(-1j*k_p/2) * (np.exp(1j*k_p) - 1)
+                    E_i += -delta_r * 1j * omega * mu0 * current[curr_pos] * (integrate.quad(exp_dp_real, 0, 1, args = (point, r_n, dr_n, omega, basis_functions))[0] + 1j * integrate.quad(exp_dp_imag, 0, 1, args = (point, r_n, dr_n, omega, basis_functions))[0])
                     curr_pos += 1
         elif basis_functions == 'triangle':
             for m in range(len(segments_block)):
@@ -102,10 +103,11 @@ def calc_field_pattern (phi, theta, distance, basis_functions, structure_type, a
                     rmn = np.linalg.norm(point - r_n)
                     k_vec = (point - r_n) / rmn
                     k_p = k * np.dot(k_vec, dr_n)
-                    if k_p == 0:
-                        E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (2 * np.pi * rmn) * np.exp(-1j * k *rmn)
-                    else:
-                        E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (4*np.pi*rmn*k_p**2) * np.exp(-1j*k*rmn) * np.exp(-1j*k_p) * (2*np.exp(1j*k_p) - np.exp(2j*k_p) - 1)
+                    #if k_p == 0:
+                    #    E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (2 * np.pi * rmn) * np.exp(-1j * k *rmn)
+                    #else:
+                    #    E_i += - 1j * omega * mu0 * current[curr_pos] * delta_r / (4*np.pi*rmn*k_p**2) * np.exp(-1j*k*rmn) * np.exp(-1j*k_p) * (2*np.exp(1j*k_p) - np.exp(2j*k_p) - 1)
+                    E_i += - (1/4/np.pi) * delta_r * 1j * omega * mu0 * current[curr_pos] * (integrate.quad(exp_dp_real, -1/2, 3/2, args = (point, r_n, dr_n, omega, basis_functions))[0] + 1j * integrate.quad(exp_dp_imag, 0, 1, args = (point, r_n, dr_n, omega, basis_functions))[0])
                     curr_pos += 1
         E.append(E_i)
     E_total = np.abs(E)
